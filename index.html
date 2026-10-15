@@ -22,7 +22,11 @@
 [hidden]{display:none!important}
 html{background:var(--bg)}body{background:transparent}
 body{color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;position:relative;overflow-x:hidden}
-.bgimg{position:fixed;inset:-40px;background:url(th_sim3d.jpg) center/cover no-repeat;filter:blur(14px) saturate(1.25) brightness(.85);transform:scale(1.08);z-index:-2;animation:drift 40s ease-in-out infinite alternate}
+/* fondo: fotos del libro difuminadas que se alternan con fundido lento y un leve desplazamiento */
+.bgstack{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--bg)}
+.bgimg{position:absolute;inset:-60px;background:center/cover no-repeat;filter:blur(16px) saturate(1.2) brightness(.8);transform:scale(1.08);opacity:0;transition:opacity 3s ease-in-out;animation:drift 40s ease-in-out infinite alternate}
+.bgimg.on{opacity:1}
+.bgimg:nth-child(2){animation-direction:alternate-reverse}.bgimg:nth-child(3){animation-duration:46s}.bgimg:nth-child(4){animation-duration:52s;animation-direction:alternate-reverse}
 .bgveil{position:fixed;inset:0;z-index:-1;background:radial-gradient(1100px 600px at 15% -10%,rgba(65,184,234,.22),transparent 60%),radial-gradient(900px 500px at 100% 110%,rgba(47,191,154,.16),transparent 60%),linear-gradient(180deg,rgba(7,12,17,.15),rgba(7,12,17,.7))}
 @keyframes drift{from{transform:scale(1.08) translate(0,0)}to{transform:scale(1.14) translate(-2%,-1.5%)}}
 .wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 36px;display:grid;gap:34px}
@@ -111,7 +115,8 @@ footer a{color:var(--muted)}
 </head>
 <body style="margin:0">
 
-<div class="bgimg" aria-hidden="true"></div><div class="bgveil" aria-hidden="true"></div>
+<!-- Fotos del libro: pileta al atardecer, tanques desde arriba, tendido de línea, locación al ocaso -->
+<div class="bgstack" aria-hidden="true"><div class="bgimg on" style="background-image:url(bg1.jpg)"></div><div class="bgimg" data-bg="bg2.jpg"></div><div class="bgimg" data-bg="bg3.jpg"></div><div class="bgimg" data-bg="bg4.jpg"></div></div><div class="bgveil" aria-hidden="true"></div>
 <div class="wrap">
   <div class="topbar"><div class="lang" role="group" aria-label="Idioma / Language"><button type="button" data-lang="es" aria-pressed="true">ES</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div></div>
 
@@ -228,6 +233,21 @@ footer a{color:var(--muted)}
   t.addEventListener('pointerleave',()=>{t.style.transform=''})})})();
 // si la miniatura 3 existe, ocultar el marcador
 (function(){const i=document.querySelector('img[src="th_simtraza.jpg"]');const ph=document.getElementById('ph3');if(!i)return;i.addEventListener('load',()=>ph.hidden=true);i.addEventListener('error',()=>i.remove());if(i.complete&&i.naturalWidth)ph.hidden=true})();
+
+// fondo: carga las fotos restantes después de la primera y las alterna cada 9 s
+(function(){
+  var layers=[].slice.call(document.querySelectorAll('.bgimg'));
+  var still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(still||layers.length<2)return;
+  window.addEventListener('load',function(){
+    layers.forEach(function(l){if(l.dataset.bg){var im=new Image();im.src=l.dataset.bg;l.style.backgroundImage='url('+l.dataset.bg+')'}});
+    var i=0;
+    setInterval(function(){
+      if(document.hidden)return;
+      layers[i].classList.remove('on');i=(i+1)%layers.length;layers[i].classList.add('on');
+    },9000);
+  });
+})();
 
 // agenda: marca "Próximo" o "Realizado" según la fecha de hoy y ordena (próximos primero)
 var LANG='es';
