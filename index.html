@@ -39,7 +39,7 @@ h1{margin:6px 0 4px;font:700 clamp(34px,5.4vw,58px)/.98 var(--f-display);text-tr
 .ico:hover{transform:translateY(-3px);border-color:currentColor;box-shadow:0 8px 24px rgba(0,0,0,.35)}
 a:focus-visible{outline:3px solid var(--water);outline-offset:3px;border-radius:12px}
 /* línea de presión animada */
-.flow{height:8px;border-radius:4px;position:relative;overflow:hidden;background:linear-gradient(90deg,#2b6cd6,#2fbf9a 35%,#e8c547 70%,#ef5350)}
+.flow{height:8px;border-radius:4px;position:relative;overflow:hidden;background:linear-gradient(90deg,#ef5350,#e8c547 30%,#2fbf9a 65%,#2b6cd6)}
 .flow::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 40px,rgba(255,255,255,.55) 40px 46px,transparent 46px 90px);animation:flow 2.4s linear infinite;mix-blend-mode:overlay}
 @keyframes flow{to{background-position:90px 0}}
 .linecap{display:flex;justify-content:space-between;font:400 11px var(--f-mono);color:var(--muted);margin-top:6px}
