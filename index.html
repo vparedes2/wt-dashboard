@@ -63,6 +63,7 @@ a:focus-visible{outline:3px solid var(--water);outline-offset:3px;border-radius:
 .linecap{display:flex;justify-content:space-between;font:400 11px var(--f-mono);color:var(--muted);margin-top:6px}
 h2{margin:0;font:600 22px var(--f-display);letter-spacing:.1em;text-transform:uppercase}
 .tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.capref{margin:8px 0 0!important;font-size:12.5px!important;color:var(--muted);border-left:2px solid var(--amber);padding-left:8px}
 .soon{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 20px}
 .soon .tag{font:600 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(240,160,60,.55);border-radius:999px;padding:3px 10px;white-space:nowrap}
 .soon p{margin:2px 0 0;color:var(--muted);font-size:14px}.soon h3{margin:0;font:700 22px/1.1 var(--f-display)}
@@ -192,11 +193,17 @@ footer a{color:var(--muted)}
           <div class="go"><span>montajetanques3d.vercel.app</span><span>→</span></div>
         </div>
       </a>
-    </div>
-    <div class="soon glass">
-      <span class="tag" data-i18n="soon_t">En desarrollo</span>
-      <div><h3 data-i18n="soon_h">Tendido de línea layflat 3D</h3><p data-i18n="soon_p">Desfile de carretes con manipulador, primera manguera anclada y unión de punteras Victaulic, según el capítulo 8 del libro.</p></div>
-      <a class="cta wa" href="https://wa.me/5492994603071?text=Hola%20V%C3%ADctor%2C%20quiero%20que%20me%20avises%20cuando%20est%C3%A9%20el%20simulador%20de%20tendido." target="_blank" rel="noopener" data-i18n="soon_cta">Avisame →</a>
+      <a class="tool glass" href="https://tendido-layflat-3d.vercel.app/" target="_blank" rel="noopener">
+        <div class="thumb"><img src="th_tendido.jpg" alt="Manipulador en reversa desfilando un carrete de manguera layflat de 12 pulgadas"></div>
+        <div class="body">
+          <span class="num" data-i18n="t5n">05 · Tendido</span>
+          <h3 data-i18n="t5h">Tendido de línea layflat 3D</h3>
+          <p data-i18n="t5p">Animación 3D del tendido de 1 km de manguera de 12" con un manipulador: desfile de carretes en reversa y unión de punteras Victaulic, con reloj de obra.</p>
+          <ul data-i18n="t5l" data-html><li>5 carretes de 200 m y acopio cada 200 m</li><li>Primera manguera anclada con la camioneta</li><li>Unión: puntera arriba, extremo boca abajo, medialunas y bulones</li><li>Señalero, cuadrilla en camioneta y EPP</li></ul>
+          <p class="capref" data-i18n="t5c" data-html>📖 Basado en el <b>capítulo 8 · Montaje de línea layflat</b>: 8.4 Descarga de carretes y acopio · 8.5 Desfile de carretes · 8.6 Trazado en terreno · 8.7 Uniones · 8.8 Unión de punteras por diámetro</p>
+          <div class="go"><span>tendido-layflat-3d.vercel.app</span><span>→</span></div>
+        </div>
+      </a>
     </div>
   </section>
 
@@ -315,6 +322,7 @@ var EN={
   t3n:'03 · Operation',t3h:'Route operation simulator',t3p:'Adjust the rpm of each station and see how pressures and flow respond along the whole line.',
   t3l:'<li>Operating point of each pump</li><li>Alarms per section, with suggestions</li><li>Air valves and line devices</li><li>Diesel consumption and autonomy</li>',
   ph:'Thumbnail pending',
+t5n:'05 · Deployment',t5h:'3D layflat line deployment',t5p:'3D animation of laying 1 km of 12" hose with one telehandler: reels deployed in reverse and Victaulic end joints, with a site clock.',t5l:'<li>5 reels of 200 m, stockpile every 200 m</li><li>First hose anchored with the pickup</li><li>Joint: end up, other end face-down, half-clamps and bolts</li><li>Signaler, crew in pickup and PPE</li>',t5c:'📖 Based on <b>chapter 8 · Layflat line assembly</b>: 8.4 Reel unloading and stockpile · 8.5 Reel deployment · 8.6 Field routing · 8.7 Joints · 8.8 End-joint procedure by diameter',
   t4n:'04 · Assembly',t4h:'Modular tank assembly',t4p:'Step-by-step 3D animation of assembling a 22-panel tank over two work days, with a site clock and safety criteria.',
   t4l:'<li>Trailer, telehandler and sand trucks</li><li>Liner, ballast, closing and bolting</li><li>Breaks, day and night, real times</li><li>Crew, supervisors and PPE</li>',
   soon_t:'In development',soon_h:'3D layflat deployment',soon_p:'Reel deployment with a telehandler, anchored first hose and Victaulic joints, following chapter 8 of the book.',soon_cta:'Let me know →',
