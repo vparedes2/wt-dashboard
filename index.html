@@ -3,24 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Water Transfer · Herramientas</title>
+<title>Water Transfer · Herramientas, libro y capacitación</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Herramientas web de water transfer del Lic. Víctor Javier Paredes, autor de Water Transfer en Vaca Muerta: diseñador de traza, simulador 3D y simulador hidráulico.">
+<meta name="description" content="Lic. Víctor Javier Paredes, autor de Water Transfer en Vaca Muerta: el libro, herramientas web de water transfer (diseñador de traza, simulador 3D, simulador de operación y montaje de tanque australiano) y charlas y capacitación para empresas.">
+<!-- Vista previa al compartir el link en LinkedIn, WhatsApp, etc. -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wt-home.vercel.app/">
+<meta property="og:title" content="Water Transfer en Vaca Muerta · Libro, herramientas y capacitación">
+<meta property="og:description" content="El libro de Víctor Javier Paredes y cuatro herramientas web para diseñar, visualizar, operar y montar una traza de water transfer.">
+<meta property="og:image" content="https://wt-home.vercel.app/th_sim3d.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: fondo del simulador difuminado; franja de autor en vidrio; tres accesos con miniatura; pie con iconos. Look oscuro único, acento agua. */
-:root{--bg:#070c11;--glass:rgba(16,26,35,.62);--glass2:rgba(22,36,48,.72);--line:rgba(140,190,220,.18);--fg:#e8eff4;--muted:#9db0bd;--water:#41b8ea;--water2:#2fbf9a;--hot:#ef5350;
+/* Layout: fondo del simulador difuminado; franja de autor en vidrio; tres accesos con miniatura; charlas y capacitación; pie con iconos. Look oscuro único, acento agua. */
+:root{--bg:#070c11;--glass:rgba(16,26,35,.62);--glass2:rgba(22,36,48,.72);--line:rgba(140,190,220,.18);--fg:#e8eff4;--muted:#9db0bd;--water:#41b8ea;--water2:#2fbf9a;--hot:#ef5350;--amber:#f0a03c;
   --f-display:"Barlow Condensed","Arial Narrow",sans-serif;--f-body:"IBM Plex Sans",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,monospace;color-scheme:dark}
 [hidden]{display:none!important}
 html{background:var(--bg)}body{background:transparent}
 body{color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;position:relative;overflow-x:hidden}
-.bgimg{position:fixed;inset:-40px;background:url(th_sim3d.jpg) center/cover no-repeat;filter:blur(14px) saturate(1.25) brightness(.85);transform:scale(1.08);z-index:-2;animation:drift 40s ease-in-out infinite alternate}
+/* fondo: fotos del libro difuminadas que se alternan con fundido lento y un leve desplazamiento */
+.bgstack{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--bg)}
+.bgimg{position:absolute;inset:-60px;background:center/cover no-repeat;filter:blur(16px) saturate(1.2) brightness(.8);transform:scale(1.08);opacity:0;transition:opacity 3s ease-in-out;animation:drift 40s ease-in-out infinite alternate}
+.bgimg.on{opacity:1}
+.bgimg:nth-child(2){animation-direction:alternate-reverse}.bgimg:nth-child(3){animation-duration:46s}.bgimg:nth-child(4){animation-duration:52s;animation-direction:alternate-reverse}
 .bgveil{position:fixed;inset:0;z-index:-1;background:radial-gradient(1100px 600px at 15% -10%,rgba(65,184,234,.22),transparent 60%),radial-gradient(900px 500px at 100% 110%,rgba(47,191,154,.16),transparent 60%),linear-gradient(180deg,rgba(7,12,17,.15),rgba(7,12,17,.7))}
 @keyframes drift{from{transform:scale(1.08) translate(0,0)}to{transform:scale(1.14) translate(-2%,-1.5%)}}
 .wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 36px;display:grid;gap:34px}
 .glass{background:var(--glass);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2)}
 .eyebrow{font:500 12px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--water)}
+.topbar{display:flex;justify-content:flex-end;margin-bottom:-22px}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--glass2)}
+.lang button{all:unset;cursor:pointer;padding:5px 12px;font:500 12px var(--f-mono);letter-spacing:.08em;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--water);color:#06131b}
+.lang button:focus-visible{outline:2px solid var(--water);outline-offset:-2px}
 .hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:30px;align-items:center;padding:26px}
 .photo{width:230px;aspect-ratio:3/4;max-width:100%;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.45)}
 .photo::after{content:"";position:absolute;inset:0;border-radius:14px;padding:2px;background:linear-gradient(140deg,var(--water),var(--water2),transparent 60%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
@@ -29,14 +45,16 @@ body{color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;p
 h1{margin:6px 0 4px;font:700 clamp(34px,5.4vw,58px)/.98 var(--f-display);text-transform:uppercase;letter-spacing:.02em;text-wrap:balance;background:linear-gradient(90deg,#fff 30%,#bfe6f7);-webkit-background-clip:text;background-clip:text;color:transparent}
 .role{font-size:15px;color:var(--muted);margin:0 0 12px}
 .bio{max-width:66ch;margin:0;color:#d3dee6}
-.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
-.book{display:inline-flex;gap:8px;align-items:baseline;padding:9px 14px;border:1px solid var(--line);border-radius:10px;background:var(--glass2);font-size:14px;color:var(--fg);text-decoration:none;transition:border-color .2s,box-shadow .2s}
-.book b{font-family:var(--f-display);font-size:17px;letter-spacing:.03em}
-.book:hover{border-color:var(--water);box-shadow:0 0 0 4px rgba(65,184,234,.12)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+.buy{display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border-radius:12px;background:linear-gradient(135deg,var(--water),var(--water2));color:#04121a;text-decoration:none;font:700 19px var(--f-display);letter-spacing:.04em;text-transform:uppercase;box-shadow:0 10px 28px rgba(47,191,154,.25);transition:transform .2s,box-shadow .2s}
+.buy:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(47,191,154,.35)}
+.buy span{font-size:22px;line-height:1}
 .ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line);background:var(--glass2);transition:transform .2s,box-shadow .2s,border-color .2s}
 .ico svg{width:22px;height:22px;fill:currentColor}
 .ico.wa{color:#25d366}.ico.li{color:#3d9be0}
 .ico:hover{transform:translateY(-3px);border-color:currentColor;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.bookfacts{margin:10px 0 0;font:400 12.5px var(--f-mono);color:var(--muted);letter-spacing:.02em}
+.bookfacts b{color:var(--fg);font-weight:500}
 a:focus-visible{outline:3px solid var(--water);outline-offset:3px;border-radius:12px}
 /* línea de presión animada */
 .flow{height:8px;border-radius:4px;position:relative;overflow:hidden;background:linear-gradient(90deg,#ef5350,#e8c547 30%,#2fbf9a 65%,#2b6cd6)}
@@ -45,6 +63,13 @@ a:focus-visible{outline:3px solid var(--water);outline-offset:3px;border-radius:
 .linecap{display:flex;justify-content:space-between;font:400 11px var(--f-mono);color:var(--muted);margin-top:6px}
 h2{margin:0;font:600 22px var(--f-display);letter-spacing:.1em;text-transform:uppercase}
 .tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.soon{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 20px}
+.soon .tag{font:600 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(240,160,60,.55);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.soon p{margin:2px 0 0;color:var(--muted);font-size:14px}.soon h3{margin:0;font:700 22px/1.1 var(--f-display)}
+@media (max-width:720px){.soon{grid-template-columns:1fr}}
+.book{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}@media (max-width:920px){.book{grid-template-columns:1fr}}
+.chap{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px 14px;font-size:13.5px;color:#d3dee6}
+.chap li{display:flex;gap:8px}.chap li b{font:500 12px var(--f-mono);color:var(--water);min-width:22px}
 @media (max-width:920px){.tools{grid-template-columns:1fr}.hero{grid-template-columns:1fr;justify-items:start}}
 .tool{--mx:50%;--my:50%;display:flex;flex-direction:column;overflow:hidden;color:inherit;text-decoration:none;position:relative;transition:transform .25s,border-color .25s,box-shadow .25s;transform-style:preserve-3d}
 .tool::before{content:"";position:absolute;inset:0;border-radius:18px;background:radial-gradient(380px circle at var(--mx) var(--my),rgba(65,184,234,.18),transparent 45%);opacity:0;transition:opacity .25s;pointer-events:none;z-index:1}
@@ -57,96 +82,189 @@ h2{margin:0;font:600 22px var(--f-display);letter-spacing:.1em;text-transform:up
 .thumb .ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#8fa2b1;font:500 13px var(--f-mono);padding:16px;background:repeating-linear-gradient(135deg,#0e161d 0 14px,#111b23 14px 28px)}
 .body{padding:14px 18px 18px;display:grid;gap:8px;flex:1;align-content:start;position:relative;z-index:2}
 .num{font:500 11px var(--f-mono);color:var(--water);letter-spacing:.1em;text-transform:uppercase}
-.tool h3{margin:0;font:700 26px/1.05 var(--f-display);letter-spacing:.02em}
-.tool p{margin:0;font-size:14px;color:var(--muted)}
-.tool ul{margin:0;padding-left:18px;font-size:13.5px;display:grid;gap:2px;color:#d3dee6}
+.tool h3,.card h3{margin:0;font:700 26px/1.05 var(--f-display);letter-spacing:.02em}
+.tool p,.card p{margin:0;font-size:14px;color:var(--muted)}
+.tool ul,.card ul{margin:0;padding-left:18px;font-size:13.5px;display:grid;gap:2px;color:#d3dee6}
 .go{margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;align-items:center;font:500 12.5px var(--f-mono);color:var(--water);min-width:0}
 .go span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .go span:last-child{font-size:20px;transition:transform .25s}
 .tool:hover .go span:last-child{transform:translateX(5px)}
+/* charlas y capacitación */
+.train{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px}
+@media (max-width:920px){.train{grid-template-columns:1fr}}
+.card{padding:20px 22px;display:grid;gap:12px;align-content:start}
+.events{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ev{display:grid;grid-template-columns:76px minmax(0,1fr);gap:14px;align-items:start;padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(10,18,25,.45)}
+.ev.next{border-color:rgba(240,160,60,.55);background:rgba(240,160,60,.07)}
+.date{display:grid;justify-items:center;padding:6px 0;border-radius:10px;background:var(--glass2);font-family:var(--f-display);line-height:1}
+.date b{font-size:30px}.date small{font:500 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.ev h4{margin:0 0 2px;font:600 18px/1.15 var(--f-display);letter-spacing:.02em}
+.ev p{margin:0;font-size:13.5px;color:var(--muted)}
+.badge{display:inline-block;margin-bottom:5px;padding:1px 8px;border-radius:999px;font:500 10.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);color:var(--muted)}
+.ev.next .badge{border-color:var(--amber);color:var(--amber)}
+.ev a{color:var(--water)}
+.cta{display:inline-flex;align-items:center;gap:8px;justify-self:start;padding:9px 14px;border:1px solid var(--line);border-radius:10px;background:var(--glass2);color:var(--fg);text-decoration:none;font-size:14px;transition:border-color .2s,box-shadow .2s}
+.cta:hover{border-color:var(--water);box-shadow:0 0 0 4px rgba(65,184,234,.12)}
+.cta.wa{border-color:rgba(37,211,102,.45)}
+.topics{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.card .events,.card .topics{padding:0}.card .topics{display:flex}
+.topics li{padding:3px 10px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;color:#d3dee6;background:rgba(10,18,25,.45)}
 footer{padding:16px 20px;display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center;font-size:13.5px;color:var(--muted)}
 footer .icons{display:flex;gap:10px}
+footer a{color:var(--muted)}
 .note{font-size:12.5px;color:var(--muted);flex-basis:100%}
 /* entrada: parte de un estado visible, solo desplaza */
 .rise{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
 .rise.d1{animation-delay:.08s}.rise.d2{animation-delay:.16s}.rise.d3{animation-delay:.24s}.rise.d4{animation-delay:.32s}
 @keyframes rise{from{transform:translateY(14px)}to{transform:none}}
-@media (prefers-reduced-motion:reduce){.bgimg,.flow::after,.rise{animation:none}.tool,.tool .thumb img,.ico{transition:none}}
+@media (prefers-reduced-motion:reduce){.bgimg,.flow::after,.rise{animation:none}.tool,.tool .thumb img,.ico,.buy{transition:none}}
 </style>
 </head>
 <body style="margin:0">
 
-<div class="bgimg" aria-hidden="true"></div><div class="bgveil" aria-hidden="true"></div>
+<!-- Fotos del libro: pileta al atardecer, tanques desde arriba, tendido de línea, locación al ocaso -->
+<div class="bgstack" aria-hidden="true"><div class="bgimg on" style="background-image:url(bg1.jpg)"></div><div class="bgimg" data-bg="bg2.jpg"></div><div class="bgimg" data-bg="bg3.jpg"></div><div class="bgimg" data-bg="bg4.jpg"></div></div><div class="bgveil" aria-hidden="true"></div>
 <div class="wrap">
+  <div class="topbar"><div class="lang" role="group" aria-label="Idioma / Language"><button type="button" data-lang="es" aria-pressed="true">ES</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div></div>
+
   <header class="hero glass rise">
     <div class="photo"><img id="foto" src="foto.jpg" alt="Lic. Víctor Javier Paredes con su libro Water Transfer en Vaca Muerta" onerror="this.remove();document.getElementById('ini').hidden=false"><span id="ini" hidden>VP</span></div>
     <div>
       <div class="eyebrow">Water transfer · Vaca Muerta</div>
       <h1>Lic. Víctor Javier Paredes</h1>
-      <p class="role">Licenciado en Higiene y Seguridad Laboral · Técnico en Hidrocarburos · HSE en operaciones de Vaca Muerta</p>
-      <p class="bio">Autor del manual <i>Water Transfer en Vaca Muerta</i>, una guía práctica sobre acueductos temporales de manguera layflat: cálculo hidráulico, pérdida de carga calibrada con presiones de campo, ubicación de rebombeos, golpe de ariete y operación segura. Estas herramientas llevan los criterios del libro a la pantalla, para diseñar una traza, entender cómo trabaja la línea y entrenar a quienes la operan.</p>
-      <div class="actions"><a class="book" href="https://wa.me/5492994603071?text=Hola%20V%C3%ADctor%2C%20quiero%20consultar%20por%20el%20libro%20Water%20Transfer%20en%20Vaca%20Muerta." target="_blank" rel="noopener"><b>Water Transfer en Vaca Muerta</b> · consultar por el libro →</a>
+      <p class="role" data-i18n="role">Licenciado en Higiene y Seguridad Laboral · Técnico en Hidrocarburos · HSE en operaciones de Vaca Muerta</p>
+      <p class="bio" data-i18n="bio" data-html>Autor del manual <i>Water Transfer en Vaca Muerta</i>, una guía práctica sobre acueductos temporales de manguera layflat: cálculo hidráulico, pérdida de carga calibrada con presiones de campo, ubicación de rebombeos, golpe de ariete y operación segura. Estas herramientas llevan los criterios del libro a la pantalla, para diseñar una traza, entender cómo trabaja la línea y entrenar a quienes la operan.</p>
+      <div class="actions">
+        <a class="buy" id="buy" href="https://wa.me/5492994603071?text=Hola%20V%C3%ADctor%2C%20quiero%20pedir%20un%20ejemplar%20de%20Water%20Transfer%20en%20Vaca%20Muerta." target="_blank" rel="noopener"><b data-i18n="buy">Pedí tu ejemplar</b><span aria-hidden="true">→</span></a>
         <a class="ico wa" href="https://wa.me/5492994603071" target="_blank" rel="noopener" aria-label="WhatsApp +54 9 299 460-3071" title="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.08.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35zM12.05 21.5h-.01a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.38 9.38 0 0 1-1.44-5c0-5.19 4.23-9.42 9.43-9.42a9.4 9.4 0 0 1 9.42 9.43c0 5.2-4.23 9.42-9.44 9.42zm8.02-17.44A11.27 11.27 0 0 0 12.05.75C5.8.75.72 5.83.72 12.08c0 2 .52 3.95 1.52 5.67L.62 23.25l5.63-1.48a11.3 11.3 0 0 0 5.8 1.48h.01c6.24 0 11.33-5.08 11.33-11.33 0-3.03-1.18-5.87-3.32-8.01z"/></svg></a>
-        <a class="ico li" href="https://www.linkedin.com/in/vparedes2/" target="_blank" rel="noopener" aria-label="LinkedIn de Víctor Javier Paredes" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a></div>
+        <a class="ico li" href="https://www.linkedin.com/in/vparedes2/" target="_blank" rel="noopener" aria-label="LinkedIn de Víctor Javier Paredes" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a>
+      </div>
+      <!-- Para mostrar precio o formato, agregalos acá, por ejemplo: · <b>Papel · $00.000</b> -->
+      <p class="bookfacts" data-i18n="facts" data-html><b>Water Transfer en Vaca Muerta</b> · 278 páginas · 20 capítulos · 12 anexos · precio y envío por WhatsApp</p>
     </div>
   </header>
 
   <div class="rise d1">
     <div class="flow" aria-hidden="true"></div>
-    <div class="linecap" aria-hidden="true"><span>captación · 12 kg/cm²</span><span>presión en la línea</span><span>succión · 1,6 kg/cm²</span></div>
+    <div class="linecap" aria-hidden="true"><span data-i18n="cap1">captación · 12 kg/cm²</span><span data-i18n="cap2">presión en la línea</span><span data-i18n="cap3">succión · 1,6 kg/cm²</span></div>
   </div>
 
   <section class="rise d2" style="display:grid;gap:16px">
-    <h2>Herramientas</h2>
+    <h2 data-i18n="h_tools">Herramientas</h2>
     <div class="tools">
       <a class="tool glass" href="https://maketraza.vercel.app/" target="_blank" rel="noopener">
         <div class="thumb"><img src="th_traza.jpg" alt="Perfil piezométrico y tabla del diseñador de traza"></div>
         <div class="body">
-          <span class="num">01 · Diseño</span>
-          <h3>Diseñador de traza</h3>
-          <p>Cargás el KMZ de la traza, definís caudal y manguera, y calcula dónde van los rebombeos y el tanque.</p>
-          <ul><li>Cotas reales desde modelos de elevación</li><li>Manguera de 12", 14" o 16"</li><li>Perfil piezométrico, planta y modelo 3D</li><li>Exporta las estaciones a Google Earth</li></ul>
+          <span class="num" data-i18n="t1n">01 · Diseño</span>
+          <h3 data-i18n="t1h">Diseñador de traza</h3>
+          <p data-i18n="t1p">Cargás el KMZ de la traza, definís caudal y manguera, y calcula dónde van los rebombeos y el tanque.</p>
+          <ul data-i18n="t1l" data-html><li>Cotas reales desde modelos de elevación</li><li>Manguera de 12", 14" o 16"</li><li>Perfil piezométrico, planta y modelo 3D</li><li>Exporta las estaciones a Google Earth</li></ul>
           <div class="go"><span>maketraza.vercel.app</span><span>→</span></div>
         </div>
       </a>
       <a class="tool glass" href="https://simulador-water-transfer-3d.vercel.app/" target="_blank" rel="noopener">
         <div class="thumb"><img src="th_sim3d.jpg" alt="Estación de rebombeo en el simulador 3D"></div>
         <div class="body">
-          <span class="num">02 · Visualización</span>
-          <h3>Simulador 3D</h3>
-          <p>Recorrido en 3D de una troncal de 18,6 km, desde el río hasta el tanque, sobre relieve de barda y meseta.</p>
-          <ul><li>Estaciones con bomba en marcha y backup</li><li>Manguera coloreada según la presión</li><li>Datos por estación y perfil piezométrico</li><li>Español e inglés</li></ul>
+          <span class="num" data-i18n="t2n">02 · Visualización</span>
+          <h3 data-i18n="t2h">Simulador 3D</h3>
+          <p data-i18n="t2p">Recorrido en 3D de una troncal de 18,6 km, desde el río hasta el tanque, sobre relieve de barda y meseta.</p>
+          <ul data-i18n="t2l" data-html><li>Estaciones con bomba en marcha y backup</li><li>Manguera coloreada según la presión</li><li>Datos por estación y perfil piezométrico</li><li>Español e inglés</li></ul>
           <div class="go"><span>simulador-water-transfer-3d.vercel.app</span><span>→</span></div>
         </div>
       </a>
       <a class="tool glass" href="https://simulador-traza.vercel.app/" target="_blank" rel="noopener">
-        <div class="thumb"><img src="th_simtraza.jpg" alt="Panel del simulador de traza"><div class="ph" id="ph3">Miniatura pendiente<br>(captura de simulador-traza)</div></div>
+        <div class="thumb"><img src="th_simtraza.jpg" alt="Panel del simulador de traza"><div class="ph" id="ph3" data-i18n="ph" data-html>Miniatura pendiente<br>(captura de simulador-traza)</div></div>
         <div class="body">
-          <span class="num">03 · Operación</span>
-          <h3>Simulador de traza</h3>
-          <p>Simulador de operación: regulás las rpm de cada estación y ves cómo responden presiones y caudal en toda la línea.</p>
-          <ul><li>Régimen de cada motobomba</li><li>Alarmas por tramo y sugerencias</li><li>Ventosas y dispositivos de línea</li><li>Consumo y autonomía de gasoil</li></ul>
+          <span class="num" data-i18n="t3n">03 · Operación</span>
+          <h3 data-i18n="t3h">Simulador de traza</h3>
+          <p data-i18n="t3p">Simulador de operación: regulás las rpm de cada estación y ves cómo responden presiones y caudal en toda la línea.</p>
+          <ul data-i18n="t3l" data-html><li>Régimen de cada motobomba</li><li>Alarmas por tramo y sugerencias</li><li>Ventosas y dispositivos de línea</li><li>Consumo y autonomía de gasoil</li></ul>
           <div class="go"><span>simulador-traza.vercel.app</span><span>→</span></div>
         </div>
       </a>
-      <a class="tool glass" href="https://montajetanques3d.vercel.app/" target="_blank" rel="noopener" id="lnk-montaje">
+      <a class="tool glass" href="https://montajetanques3d.vercel.app/" target="_blank" rel="noopener">
         <div class="thumb"><img src="th_montaje.jpg" alt="Animación 3D del montaje de un tanque australiano"></div>
         <div class="body">
-          <span class="num">04 · Montaje</span>
-          <h3>Montaje de tanque australiano</h3>
-          <p>Animación 3D paso a paso del montaje de un tanque de 22 placas en dos jornadas, con tiempos reales y criterios de seguridad.</p>
-          <ul><li>Carretón, manipulador y camiones de arena</li><li>Lona, lastre, cierre y abulonado</li><li>Reloj de obra con pausas y día/noche</li><li>Cuadrilla, supervisores y EPP</li></ul>
+          <span class="num" data-i18n="t4n">04 · Montaje</span>
+          <h3 data-i18n="t4h">Montaje de tanque australiano</h3>
+          <p data-i18n="t4p">Animación 3D paso a paso del montaje de un tanque de 22 placas en dos jornadas, con reloj de obra y criterios de seguridad.</p>
+          <ul data-i18n="t4l" data-html><li>Carretón, manipulador y camiones de arena</li><li>Lona, lastre, cierre y abulonado</li><li>Pausas, día y noche, tiempos reales</li><li>Cuadrilla, supervisores y EPP</li></ul>
           <div class="go"><span>montajetanques3d.vercel.app</span><span>→</span></div>
         </div>
       </a>
+    </div>
+    <div class="soon glass">
+      <span class="tag" data-i18n="soon_t">En desarrollo</span>
+      <div><h3 data-i18n="soon_h">Tendido de línea layflat 3D</h3><p data-i18n="soon_p">Desfile de carretes con manipulador, primera manguera anclada y unión de punteras Victaulic, según el capítulo 8 del libro.</p></div>
+      <a class="cta wa" href="https://wa.me/5492994603071?text=Hola%20V%C3%ADctor%2C%20quiero%20que%20me%20avises%20cuando%20est%C3%A9%20el%20simulador%20de%20tendido." target="_blank" rel="noopener" data-i18n="soon_cta">Avisame →</a>
+    </div>
+  </section>
+
+  <section class="rise d3" id="libro" style="display:grid;gap:16px">
+    <h2 data-i18n="h_book">El libro</h2>
+    <div class="book">
+      <div class="card glass">
+        <span class="num" data-i18n="bk_n">Water Transfer en Vaca Muerta</span>
+        <h3 data-i18n="bk_h">Un manual hecho desde el frente de trabajo</h3>
+        <p data-i18n="bk_p">Calibrado con presiones reales de campo y escrito para quien diseña, monta y opera. Cada criterio de las herramientas de esta página sale de sus capítulos.</p>
+        <ul data-i18n="bk_l" data-html><li>Hazen-Williams calibrado (C ≈ 150–168) y pérdida de carga por kilómetro</li><li>Ubicación de rebombeos, golpe de ariete y tramos en bajada</li><li>Montaje de layflat, tanques australianos y estaciones</li><li>HSE: roles, permisos, izajes y respuesta a emergencias</li></ul>
+        <a class="cta wa" href="https://wa.me/5492994603071?text=Hola%20V%C3%ADctor%2C%20quiero%20pedir%20un%20ejemplar%20de%20Water%20Transfer%20en%20Vaca%20Muerta." target="_blank" rel="noopener" data-i18n="bk_cta">Pedí tu ejemplar por WhatsApp →</a>
+      </div>
+      <div class="card glass">
+        <span class="num" data-i18n="bk_n2">Qué vas a encontrar</span>
+        <ul class="chap" data-i18n="bk_c" data-html><li><b>01</b>Por qué se hace transfer de agua</li><li><b>03</b>Relevamiento, altimetría y KMZ</li><li><b>04</b>Cálculo hidráulico</li><li><b>06</b>Conducción, rebombeos y pulmones</li><li><b>07</b>Almacenamiento en pad</li><li><b>08</b>Montaje de línea layflat</li><li><b>10</b>Motobombas</li><li><b>11</b>Telemetría y comunicaciones</li><li><b>14</b>Gestión de riesgos y HSE operativo</li><li><b>17</b>Desmontaje, recupero y restitución</li><li><b>19</b>Casos de aplicación</li><li><b>+</b>Anexos y guía para el primer día</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="rise d3" id="charlas" style="display:grid;gap:16px">
+    <h2 data-i18n="h_train">Charlas y capacitación</h2>
+    <div class="train">
+      <div class="card glass">
+        <span class="num" data-i18n="ev_n">Agenda</span>
+        <ul class="events">
+          <!-- Cada evento lleva su fecha en data-date (AAAA-MM-DD). La etiqueta "Próximo" o "Realizado" se pone sola según la fecha. -->
+          <li class="ev" data-date="2026-10-28">
+            <div class="date"><b>28</b><small data-i18n="oct">oct</small></div>
+            <div><span class="badge" data-badge></span>
+              <h4 data-i18n="ev3h">Water transfer y flowback: oportunidades para pymes</h4>
+              <p data-i18n="ev3p" data-html>Miércoles 28, de 14 a 16 h · Organiza Centro PyME · inscripción a través de Centro PyME</p>
+            </div>
+          </li>
+          <li class="ev" data-date="2026-10-19">
+            <div class="date"><b>19</b><small data-i18n="oct">oct</small></div>
+            <div><span class="badge" data-badge></span>
+              <h4 data-i18n="ev2h">Charla técnica · IFES Educación Superior</h4>
+              <p data-i18n="ev2p">Para estudiantes de 3.er año de Hidrocarburos, Topografía, Geología y Seguridad e Higiene.</p>
+            </div>
+          </li>
+          <li class="ev" data-date="2026-10-09">
+            <div class="date"><b>9</b><small data-i18n="oct">oct</small></div>
+            <div><span class="badge" data-badge></span>
+              <h4 data-i18n="ev1h">Masterclass Water Transfer · Universidad Siglo 21</h4>
+              <p data-i18n="ev1p">Presentación del libro en Neuquén: traza, cálculo hidráulico, rebombeos, tendido de layflat y seguridad en campo.</p>
+            </div>
+          </li>
+        </ul>
+        <a class="cta wa" href="https://wa.me/5492994603071?text=Hola%20V%C3%ADctor%2C%20me%20interesa%20la%20clase%20online%20en%20vivo%20de%20water%20transfer." target="_blank" rel="noopener" data-i18n="online">¿Te interesa una clase online en vivo? Avisame por WhatsApp →</a>
+      </div>
+      <div class="card glass">
+        <span class="num" data-i18n="co_n">Para empresas</span>
+        <h3 data-i18n="co_h">Capacitación a medida</h3>
+        <p data-i18n="co_p">Cursos y charlas para cuadrillas, supervisores y áreas de HSE de operadoras, empresas de servicio y pymes, con los criterios del libro y las herramientas de esta página.</p>
+        <ul class="topics" data-i18n="co_l" data-html><li>Cálculo hidráulico</li><li>Tendido de layflat</li><li>Operación de bombas</li><li>Tanques australianos</li><li>Flowback</li><li>HSE en water transfer</li></ul>
+        <a class="cta wa" href="https://wa.me/5492994603071?text=Hola%20V%C3%ADctor%2C%20quiero%20consultar%20por%20una%20capacitaci%C3%B3n%20para%20mi%20empresa." target="_blank" rel="noopener" data-i18n="co_cta">Consultar por una capacitación →</a>
+      </div>
     </div>
   </section>
 
   <footer class="glass rise d4">
     <span>Lic. Víctor Javier Paredes · Mat. PA 446</span>
     <span class="icons"><a class="ico wa" href="https://wa.me/5492994603071" target="_blank" rel="noopener" aria-label="WhatsApp" title="WhatsApp +54 9 299 460-3071"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.08.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35zM12.05 21.5h-.01a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.38 9.38 0 0 1-1.44-5c0-5.19 4.23-9.42 9.43-9.42a9.4 9.4 0 0 1 9.42 9.43c0 5.2-4.23 9.42-9.44 9.42zm8.02-17.44A11.27 11.27 0 0 0 12.05.75C5.8.75.72 5.83.72 12.08c0 2 .52 3.95 1.52 5.67L.62 23.25l5.63-1.48a11.3 11.3 0 0 0 5.8 1.48h.01c6.24 0 11.33-5.08 11.33-11.33 0-3.03-1.18-5.87-3.32-8.01z"/></svg></a><a class="ico li" href="https://www.linkedin.com/in/vparedes2/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a></span>
-    <span>vparedes2@gmail.com</span>
-    <span class="note">Valores de las herramientas: estimados de diseño. Verificar con la ficha técnica del fabricante y lecturas de campo.</span>
+    <a href="mailto:vparedes2@gmail.com">vparedes2@gmail.com</a>
+    <a href="#libro" data-i18n="f_book">El libro</a>
+    <a href="#charlas" data-i18n="f_train">Charlas y capacitación</a>
+    <span class="note" data-i18n="note">Valores de las herramientas: estimados de diseño. Verificar con la ficha técnica del fabricante y lecturas de campo.</span>
   </footer>
 </div>
 <script>
@@ -155,6 +273,85 @@ footer .icons{display:flex;gap:10px}
   t.addEventListener('pointerleave',()=>{t.style.transform=''})})})();
 // si la miniatura 3 existe, ocultar el marcador
 (function(){const i=document.querySelector('img[src="th_simtraza.jpg"]');const ph=document.getElementById('ph3');if(!i)return;i.addEventListener('load',()=>ph.hidden=true);i.addEventListener('error',()=>i.remove());if(i.complete&&i.naturalWidth)ph.hidden=true})();
+
+// fondo: carga las fotos restantes después de la primera y las alterna cada 9 s
+(function(){
+  var layers=[].slice.call(document.querySelectorAll('.bgimg'));
+  var still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(still||layers.length<2)return;
+  window.addEventListener('load',function(){
+    layers.forEach(function(l){if(l.dataset.bg){var im=new Image();im.src=l.dataset.bg;l.style.backgroundImage='url('+l.dataset.bg+')'}});
+    var i=0;
+    setInterval(function(){
+      if(document.hidden)return;
+      layers[i].classList.remove('on');i=(i+1)%layers.length;layers[i].classList.add('on');
+    },9000);
+  });
+})();
+
+// agenda: marca "Próximo" o "Realizado" según la fecha de hoy y ordena (próximos primero)
+var LANG='es';
+var BADGE={es:{next:'Próximo',past:'Realizado'},en:{next:'Upcoming',past:'Past'}};
+function paintEvents(){
+  var today=new Date();today.setHours(0,0,0,0);
+  var list=document.querySelector('.events');if(!list)return;
+  var items=[].slice.call(list.querySelectorAll('.ev'));
+  items.forEach(function(li){var d=new Date(li.dataset.date+'T23:59:59');var up=d>=today;li.classList.toggle('next',up);li.dataset.up=up?'1':'0';li.querySelector('[data-badge]').textContent=BADGE[LANG][up?'next':'past']});
+  items.sort(function(a,b){if(a.dataset.up!==b.dataset.up)return a.dataset.up==='1'?-1:1;return a.dataset.up==='1'?(a.dataset.date<b.dataset.date?-1:1):(a.dataset.date>b.dataset.date?-1:1)}).forEach(function(li){list.appendChild(li)});
+}
+
+// idioma ES / EN
+var EN={
+  role:'Occupational Health & Safety graduate · Petroleum technician · HSE in Vaca Muerta operations',
+  bio:'Author of the manual <i>Water Transfer en Vaca Muerta</i>, a practical guide to temporary layflat hose pipelines: hydraulic calculation, head loss calibrated with field pressures, booster station placement, water hammer and safe operation. These tools bring the book’s criteria to the screen, to design a route, understand how the line behaves and train the people who run it.',
+  buy:'Order your copy',
+  facts:'<b>Water Transfer en Vaca Muerta</b> (Spanish) · 278 pages · 20 chapters · 12 appendices · price and shipping via WhatsApp',
+  cap1:'intake · 12 kg/cm²',cap2:'line pressure',cap3:'suction · 1.6 kg/cm²',
+  h_tools:'Tools',
+  t1n:'01 · Design',t1h:'Route designer',t1p:'Load the route KMZ, set flow rate and hose size, and it calculates where the booster stations and the tank go.',
+  t1l:'<li>Real elevations from terrain models</li><li>12", 14" or 16" hose</li><li>Hydraulic grade line, plan view and 3D model</li><li>Exports stations to Google Earth</li>',
+  t2n:'02 · Visualization',t2h:'3D simulator',t2p:'A 3D walkthrough of an 18.6 km trunk line, from the river to the tank, over plateau and escarpment terrain.',
+  t2l:'<li>Stations with running and backup pumps</li><li>Hose colored by pressure</li><li>Per-station data and hydraulic grade line</li><li>Spanish and English</li>',
+  t3n:'03 · Operation',t3h:'Route operation simulator',t3p:'Adjust the rpm of each station and see how pressures and flow respond along the whole line.',
+  t3l:'<li>Operating point of each pump</li><li>Alarms per section, with suggestions</li><li>Air valves and line devices</li><li>Diesel consumption and autonomy</li>',
+  ph:'Thumbnail pending',
+  t4n:'04 · Assembly',t4h:'Modular tank assembly',t4p:'Step-by-step 3D animation of assembling a 22-panel tank over two work days, with a site clock and safety criteria.',
+  t4l:'<li>Trailer, telehandler and sand trucks</li><li>Liner, ballast, closing and bolting</li><li>Breaks, day and night, real times</li><li>Crew, supervisors and PPE</li>',
+  soon_t:'In development',soon_h:'3D layflat deployment',soon_p:'Reel deployment with a telehandler, anchored first hose and Victaulic joints, following chapter 8 of the book.',soon_cta:'Let me know →',
+  h_book:'The book',bk_n:'Water Transfer en Vaca Muerta',bk_h:'A manual written from the field',bk_p:'Calibrated with real field pressures and written for those who design, build and operate. Every criterion in these tools comes from its chapters.',
+  bk_l:'<li>Calibrated Hazen-Williams (C ≈ 150–168) and head loss per kilometre</li><li>Booster placement, water hammer and downhill sections</li><li>Layflat, modular tank and station assembly</li><li>HSE: roles, permits, lifting and emergency response</li>',
+  bk_cta:'Order your copy on WhatsApp →',bk_n2:'What’s inside',
+  bk_c:'<li><b>01</b>Why water is transferred</li><li><b>03</b>Survey, elevations and KMZ</li><li><b>04</b>Hydraulic calculation</li><li><b>06</b>Conveyance, boosters and buffer tanks</li><li><b>07</b>Storage on the pad</li><li><b>08</b>Layflat line assembly</li><li><b>10</b>Pumps</li><li><b>11</b>Telemetry and communications</li><li><b>14</b>Risk management and operational HSE</li><li><b>17</b>Dismantling, recovery and restoration</li><li><b>19</b>Case studies</li><li><b>+</b>Appendices and a first-day guide</li>',
+  f_book:'The book',
+  h_train:'Talks and training',ev_n:'Schedule',oct:'oct',
+  ev3h:'Water transfer and flowback: opportunities for SMEs',
+  ev3p:'Wednesday 28, 2–4 pm · Hosted by Centro PyME · registration through Centro PyME',
+  ev2h:'Technical talk · IFES Educación Superior',ev2p:'For third-year students of Petroleum, Surveying, Geology and Health & Safety.',
+  ev1h:'Water Transfer masterclass · Universidad Siglo 21',ev1p:'Book launch in Neuquén: route, hydraulic calculation, booster stations, layflat deployment and field safety.',
+  online:'Interested in a live online class? Let me know on WhatsApp →',
+  co_n:'For companies',co_h:'Custom training',co_p:'Courses and talks for crews, supervisors and HSE teams at operators, service companies and SMEs, built on the book’s criteria and the tools on this page.',
+  co_l:'<li>Hydraulic calculation</li><li>Layflat deployment</li><li>Pump operation</li><li>Modular tanks</li><li>Flowback</li><li>HSE in water transfer</li>',
+  co_cta:'Ask about training →',
+  f_train:'Talks and training',
+  note:'Tool values are design estimates. Verify against the manufacturer’s data sheet and field readings.'
+};
+var ES={};
+document.querySelectorAll('[data-i18n]').forEach(function(el){ES[el.dataset.i18n]=el.hasAttribute('data-html')?el.innerHTML:el.textContent});
+var BUY={es:document.getElementById('buy').href,en:'https://wa.me/5492994603071?text=Hi%20V%C3%ADctor%2C%20I%27d%20like%20to%20order%20a%20copy%20of%20Water%20Transfer%20en%20Vaca%20Muerta.'};
+function setLang(l){
+  LANG=l;var dict=l==='en'?EN:ES;
+  document.documentElement.lang=l;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.dataset.i18n;if(dict[k]==null)return;if(el.hasAttribute('data-html'))el.innerHTML=dict[k];else el.textContent=dict[k]});
+  document.getElementById('buy').href=BUY[l];
+  document.querySelectorAll('.lang button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.lang===l?'true':'false')});
+  paintEvents();
+  try{localStorage.setItem('wt-lang',l)}catch(e){}
+}
+document.querySelectorAll('.lang button').forEach(function(b){b.addEventListener('click',function(){setLang(b.dataset.lang)})});
+var start='es';
+try{start=localStorage.getItem('wt-lang')||'es'}catch(e){}
+if(new URLSearchParams(location.search).get('lang')==='en')start='en';
+setLang(start);
 </script>
 
 </body>
