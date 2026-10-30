@@ -41,9 +41,19 @@ body{color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;p
 .photo{width:230px;aspect-ratio:3/4;max-width:100%;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.45)}
 .photo::after{content:"";position:absolute;inset:0;border-radius:14px;padding:2px;background:linear-gradient(140deg,var(--water),var(--water2),transparent 60%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;z-index:2}
 .photo img{width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block}
-.photo .sl{position:absolute;inset:0;opacity:0;transform:scale(1.08);filter:blur(6px) saturate(.6);clip-path:circle(0% at 50% 100%);transition:opacity 1.4s ease,transform 7s ease-out,filter 1.4s ease,clip-path 1.4s cubic-bezier(.6,.05,.3,1)}
-.photo .sl.on{opacity:1;transform:scale(1);filter:none;clip-path:circle(150% at 50% 100%);z-index:1}
-.photo .sl.out{opacity:0;z-index:0;transition:opacity 1.6s ease,filter 1.4s ease;filter:blur(4px)}
+.photo .sl{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease,transform 6s ease-out,filter 1.4s ease,clip-path 1.4s cubic-bezier(.6,.05,.3,1)}
+.photo .sl.on{opacity:1;transform:none;filter:none;z-index:1}
+.photo .sl.out{opacity:0;z-index:0;transition:opacity 1.6s ease;clip-path:none!important;transform:none!important;filter:none!important}
+.photo .sl.fx0{clip-path:circle(0% at 50% 100%);transform:scale(1.08)}.photo .sl.fx0.on{clip-path:circle(150% at 50% 100%);transform:none}
+.photo .sl.fx1{clip-path:inset(0 100% 0 0)}.photo .sl.fx1.on{clip-path:inset(0 0 0 0)}
+.photo .sl.fx2{clip-path:inset(0 0 0 100%)}.photo .sl.fx2.on{clip-path:inset(0 0 0 0)}
+.photo .sl.fx3{clip-path:inset(100% 0 0 0)}.photo .sl.fx3.on{clip-path:inset(0 0 0 0)}
+.photo .sl.fx4{clip-path:polygon(0 0,0 0,0 0)}.photo .sl.fx4.on{clip-path:polygon(0 0,220% 0,0 220%)}
+.photo .sl.fx5{transform:scale(1.35);filter:blur(4px)}
+.photo .sl.fx6{filter:blur(12px) saturate(.4) brightness(1.4)}
+.photo .sl.fx7{clip-path:circle(0% at 50% 40%)}.photo .sl.fx7.on{clip-path:circle(120% at 50% 40%)}
+.photo .sl.fx8{clip-path:inset(50% 0 50% 0)}.photo .sl.fx8.on{clip-path:inset(0 0 0 0)}
+.photo .sl.fx9{transform:translateX(100%) rotate(4deg)}.photo .sl.fx9.on{transform:none;transition:opacity .6s ease,transform 1.2s cubic-bezier(.3,.9,.3,1)}
 .photo .dots{position:absolute;left:0;right:0;bottom:8px;display:flex;gap:6px;justify-content:center;z-index:3}
 .photo .dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.45);transition:background .4s,transform .4s}
 .photo .dots i.on{background:var(--water);transform:scale(1.4)}
@@ -139,7 +149,7 @@ footer a{color:var(--muted)}
   <div class="topbar"><div class="lang" role="group" aria-label="Idioma / Language"><button type="button" data-lang="es" aria-pressed="true">ES</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div></div>
 
   <header class="hero glass rise">
-    <div class="photo"><img id="foto" class="sl on" src="foto.jpg" alt="Lic. Víctor Javier Paredes con su libro Water Transfer en Vaca Muerta" onerror="this.remove();document.getElementById('ini').hidden=false"><img class="sl" src="foto2.jpg" alt="Víctor en una sala de control de operaciones con su libro" loading="lazy" onerror="this.remove()"><img class="sl" src="foto3.jpg" alt="Charla de Víctor en el Centro PyME ADENEU" loading="lazy" onerror="this.remove()"><img class="sl" src="foto4.jpg" alt="Víctor junto a un robot humanoide en una feria de energía" loading="lazy" onerror="this.remove()"><img class="sl" src="foto5.jpg" alt="El libro Water Transfer en Vaca Muerta" loading="lazy" onerror="this.remove()"><img class="sl" src="foto6.jpg" alt="Víctor con su libro en IFES, área Recursos Renovables" loading="lazy" onerror="this.remove()"><span id="ini" hidden>VP</span></div>
+    <div class="photo"><img id="foto" class="sl fx0 on" src="foto.jpg" alt="Lic. Víctor Javier Paredes con su libro Water Transfer en Vaca Muerta" onerror="this.remove();document.getElementById('ini').hidden=false"><img class="sl" src="foto2.jpg" alt="Víctor en una sala de control de operaciones con su libro" loading="lazy" onerror="this.remove()"><img class="sl" src="foto3.jpg" alt="Charla de Víctor en el Centro PyME ADENEU" loading="lazy" onerror="this.remove()"><img class="sl" src="foto4.jpg" alt="Víctor junto a un robot humanoide en una feria de energía" loading="lazy" onerror="this.remove()"><img class="sl" src="foto5.jpg" alt="El libro Water Transfer en Vaca Muerta" loading="lazy" onerror="this.remove()"><img class="sl" src="foto6.jpg" alt="Víctor con su libro en IFES, área Recursos Renovables" loading="lazy" onerror="this.remove()"><span id="ini" hidden>VP</span></div>
     <div>
       <div class="eyebrow">Water transfer · Vaca Muerta</div>
       <h1>Lic. Víctor Javier Paredes</h1>
@@ -350,10 +360,13 @@ footer a{color:var(--muted)}
   var sl=[].slice.call(box.querySelectorAll('.sl'));if(sl.length<2)return;
   sl.slice(1).forEach(function(i){i.loading='eager'});
   var d=document.createElement('div');d.className='dots';sl.forEach(function(){d.appendChild(document.createElement('i'))});box.appendChild(d);
-  var k=0,t;
+  var k=0,t,last=0;
+  sl.forEach(function(i,j){if(j)i.classList.add('fx0')});
   function show(n){sl=sl.filter(function(i){return i.isConnected});if(!sl.length)return;
     var prev=sl[k%sl.length];k=(n+sl.length)%sl.length;var cur=sl[k];if(cur===prev)return;
-    prev.classList.remove('on');prev.classList.add('out');cur.classList.remove('out');
+    var fx=Math.floor(Math.random()*10);if(fx===last)fx=(fx+1)%10;last=fx;
+    prev.classList.remove('on');prev.classList.add('out');
+    cur.className=cur.className.replace(/\b(fx\d|out|on)\b/g,'').trim()+' fx'+fx;
     void cur.offsetWidth;cur.classList.add('on');
     setTimeout(function(){prev.classList.remove('out')},1700);
     [].forEach.call(d.children,function(x,j){x.classList.toggle('on',j===k)});
