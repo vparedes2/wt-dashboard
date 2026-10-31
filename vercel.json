@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    { "source": "/maketraza/:path*", "destination": "https://maketraza.vercel.app/:path*" },
+    { "source": "/simulador3d/:path*", "destination": "https://simulador-water-transfer-3d.vercel.app/:path*" },
+    { "source": "/simuladortraza/:path*", "destination": "https://simulador-traza.vercel.app/:path*" },
+    { "source": "/assets/:path*", "destination": "https://simulador-traza.vercel.app/assets/:path*" },
+    { "source": "/montajetanque3d/:path*", "destination": "https://montajetanque3d.vercel.app/:path*" },
+    { "source": "/tendidolayflat3d/:path*", "destination": "https://tendidolayflat3d.vercel.app/:path*" },
+    { "source": "/montajebombas3d/:path*", "destination": "https://montajebombeo3d.vercel.app/:path*" },
+    { "source": "/montajebombeo3d/:path*", "destination": "https://montajebombeo3d.vercel.app/:path*" }
+  ]
+}
