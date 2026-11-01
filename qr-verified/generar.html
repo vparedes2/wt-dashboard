@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Generar certificado · Vaca Muerta Consulting</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@300..900&display=swap">
+<style>
+:root{--ink:#1E3442;--ink2:#3A4D5A;--sky:#74ACDF;--stone:#E6E3DA;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--stone);color:var(--ink);font-family:"Archivo",system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:28px 16px 48px}
+h1{margin:0 0 4px;font-size:26px}
+p.lead{margin:0 0 20px;color:var(--ink2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:20px}
+.card{background:#fff;border-radius:12px;padding:22px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.full{grid-column:1/-1}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600}
+input,select{font:inherit;font-size:15px;font-weight:400;padding:9px 10px;border:1.5px solid #A9B4BC;border-radius:7px;color:var(--ink);min-width:0}
+input:focus,select:focus{outline:3px solid var(--sky);outline-offset:1px}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+button{font:inherit;font-weight:700;padding:11px 18px;min-height:44px;border:0;border-radius:8px;background:var(--ink);color:#fff;cursor:pointer}
+button.sec{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+button:disabled{opacity:.45;cursor:not-allowed}
+pre{background:#F3F5F7;border-radius:8px;padding:12px;font-size:12.5px;overflow:auto;white-space:pre-wrap;word-break:break-word}
+canvas{display:block;width:180px;height:180px;image-rendering:pixelated;border:1px solid #D5DBE0;border-radius:6px}
+.code{font-size:20px;font-weight:800;letter-spacing:.04em}
+.steps{font-size:14px;color:var(--ink2);padding-left:18px}
+@media (max-width:520px){.fields{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Generar certificado con QR</h1>
+<p class="lead">Herramienta interna. Todo se calcula en este navegador: no se envía ni se guarda nada en la web hasta que subas el archivo .json al repositorio.</p>
+<div class="grid">
+<form class="card" id="f">
+<div class="fields">
+<label class="full">Nombre y apellido<input name="nombre" required></label>
+<label>DNI (solo se publican los 3 últimos dígitos)<input name="dni" inputmode="numeric" required></label>
+<label>Carga horaria (horas reloj)<input name="horas" type="number" min="1" required></label>
+<label class="full">Curso<input name="curso" value="Operador de Water Transfer" required></label>
+<label>Nivel (opcional)<input name="nivel" value="Nivel 1"></label>
+<label>Modalidad<select name="modalidad"><option>a distancia</option><option>semipresencial</option><option>presencial</option></select></label>
+<label>Inicio del cursado<input name="fecha_inicio" type="date" required></label>
+<label>Fin del cursado<input name="fecha_fin" type="date" required></label>
+<label>Fecha de emisión<input name="fecha_emision" type="date" required></label>
+<label>Vencimiento (opcional)<input name="vencimiento" type="date"></label>
+</div>
+<div class="row"><button type="submit">Generar código y QR</button></div>
+</form>
+<section class="card" aria-live="polite">
+<div id="empty"><p class="lead">Completá los datos y generá el certificado.</p>
+<ol class="steps">
+<li>Descargá el .json y subilo a <b>qr-verified/c/</b> del repositorio de la web.</li>
+<li>Descargá el QR (SVG para imprenta, PNG para Word o Canva) y pegalo en el certificado.</li>
+<li>Escribí el código debajo del QR, tal cual aparece acá.</li>
+</ol></div>
+<div id="out" hidden>
+<div class="code" id="codeTxt"></div>
+<p style="margin:4px 0 12px;font-size:13px;color:var(--ink2);word-break:break-all" id="urlTxt"></p>
+<canvas id="qr" width="360" height="360" aria-label="Código QR del certificado"></canvas>
+<div class="row">
+<button type="button" id="dlJson">Descargar .json</button>
+<button type="button" class="sec" id="dlSvg">QR en SVG</button>
+<button type="button" class="sec" id="dlPng">QR en PNG</button>
+</div>
+<pre id="json"></pre>
+</div>
+</section>
+</div>
+</div>
+<script src="qrcode.js"></script>
+<script>
+(function(){
+  var BASE='https://victorparedes.ar/qr-verified/?c=';
+  var ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var current=null;
+  function randCode(year){
+    var a=new Uint8Array(6); crypto.getRandomValues(a);
+    var s=''; for(var i=0;i<6;i++) s+=ALPHA[a[i]%ALPHA.length];
+    return 'VMC-'+year+'-'+s;
+  }
+  function download(name,blob){
+    var u=URL.createObjectURL(blob), a=document.createElement('a');
+    a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){URL.revokeObjectURL(u)},1000);
+  }
+  function buildQr(text){ var q=qrcode(0,'M'); q.addData(text); q.make(); return q; }
+  function drawCanvas(q,cv,margin){
+    var n=q.getModuleCount(), size=n+margin*2, scale=Math.floor(cv.width/size);
+    var ctx=cv.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height);
+    var off=Math.floor((cv.width-size*scale)/2); ctx.fillStyle='#000';
+    for(var r=0;r<n;r++) for(var c=0;c<n;c++) if(q.isDark(r,c)) ctx.fillRect(off+(c+margin)*scale,off+(r+margin)*scale,scale,scale);
+  }
+  function svgOf(q,margin){
+    var n=q.getModuleCount(), size=n+margin*2, d='';
+    for(var r=0;r<n;r++) for(var c=0;c<n;c++) if(q.isDark(r,c)) d+='M'+(c+margin)+' '+(r+margin)+'h1v1h-1z';
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+size+' '+size+'" shape-rendering="crispEdges"><rect width="'+size+'" height="'+size+'" fill="#fff"/><path d="'+d+'" fill="#000"/></svg>';
+  }
+  document.getElementById('f').addEventListener('submit',function(e){
+    e.preventDefault();
+    var fd=new FormData(e.target), g=function(k){return (fd.get(k)||'').toString().trim();};
+    var dni=g('dni').replace(/\D/g,'');
+    var em=g('fecha_emision');
+    var rec={
+      codigo: randCode(em.slice(0,4)||new Date().getFullYear()),
+      estado:'vigente',
+      nombre:g('nombre'),
+      dni_parcial:dni.slice(-3),
+      curso:g('curso'),
+      nivel:g('nivel')||undefined,
+      horas:Number(g('horas')),
+      modalidad:g('modalidad'),
+      fecha_inicio:g('fecha_inicio'),
+      fecha_fin:g('fecha_fin'),
+      fecha_emision:em,
+      vencimiento:g('vencimiento')||undefined,
+      firma:'Lic. Víctor Javier Paredes'
+    };
+    var url=BASE+rec.codigo, q=buildQr(url);
+    current={rec:rec,q:q,url:url};
+    document.getElementById('empty').hidden=true;
+    document.getElementById('out').hidden=false;
+    document.getElementById('codeTxt').textContent=rec.codigo;
+    document.getElementById('urlTxt').textContent=url;
+    document.getElementById('json').textContent=JSON.stringify(rec,null,2);
+    drawCanvas(q,document.getElementById('qr'),4);
+  });
+  document.getElementById('dlJson').onclick=function(){ if(current) download(current.rec.codigo+'.json',new Blob([JSON.stringify(current.rec,null,2)+'\n'],{type:'application/json'})); };
+  document.getElementById('dlSvg').onclick=function(){ if(current) download('QR-'+current.rec.codigo+'.svg',new Blob([svgOf(current.q,4)],{type:'image/svg+xml'})); };
+  document.getElementById('dlPng').onclick=function(){
+    if(!current) return; var cv=document.createElement('canvas'); cv.width=cv.height=1200; drawCanvas(current.q,cv,4);
+    cv.toBlob(function(b){ download('QR-'+current.rec.codigo+'.png',b); },'image/png');
+  };
+})();
+</script>
+</body>
+</html>

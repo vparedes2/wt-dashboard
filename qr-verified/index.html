@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Verificar certificado · Vaca Muerta Consulting</title>
+<meta name="description" content="Verificación de certificados de capacitación emitidos por Vaca Muerta Consulting · Lic. Víctor Javier Paredes.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap">
+<style>
+:root{--ink:#1E3442;--ink2:#3A4D5A;--sky:#74ACDF;--stone:#E6E3DA;--paper:#FFFFFF;--ok:#1F7A4D;--okbg:#E3F3EA;--bad:#9B2C2C;--badbg:#F8E5E5;--warn:#8A5A00;--warnbg:#FFF1D6;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--stone);color:var(--ink);font-family:"Archivo",system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding:32px 16px 48px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.brand b{display:block;font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1}
+.brand span{display:block;font-size:11px;font-stretch:115%;letter-spacing:.38em;margin-top:5px}
+.card{background:var(--paper);border-radius:14px;padding:28px;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+h1{font-size:28px;line-height:1.15;margin:0 0 8px;letter-spacing:-.02em}
+p.lead{margin:0 0 20px;color:var(--ink2)}
+form{display:flex;flex-wrap:wrap;gap:10px}
+label{width:100%;font-weight:600;font-size:14px}
+input{flex:1 1 260px;min-width:0;font:inherit;font-size:17px;padding:12px 14px;border:1.5px solid #A9B4BC;border-radius:8px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink)}
+input:focus{outline:3px solid var(--sky);outline-offset:1px;border-color:var(--ink)}
+button{font:inherit;font-weight:700;font-size:16px;padding:12px 22px;min-height:48px;border:0;border-radius:8px;background:var(--ink);color:#fff;cursor:pointer}
+button:hover{background:#13232E}
+#result{margin-top:24px}
+.status{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;font-weight:700;font-size:18px}
+.status svg{flex-shrink:0}
+.status.ok{background:var(--okbg);color:var(--ok)}
+.status.bad{background:var(--badbg);color:var(--bad)}
+.status.warn{background:var(--warnbg);color:var(--warn)}
+.status.load{background:#EEF2F5;color:var(--ink2);font-weight:500}
+dl{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:10px 18px;margin:20px 0 0}
+dt{color:var(--ink2);font-size:14px}
+dd{margin:0;font-weight:600}
+dd.big{font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:.01em}
+.note{font-size:13px;color:var(--ink2);margin-top:20px}
+.franja{display:flex;flex-direction:column;width:72px;margin-top:28px}
+.franja i{display:block;height:4px;background:var(--sky)}.franja i:nth-child(2){background:#fff}
+footer{margin-top:28px;font-size:13px;color:var(--ink2)}
+footer a{color:var(--ink)}
+@media (max-width:520px){dl{grid-template-columns:1fr;gap:2px}dd{margin-bottom:10px}.card{padding:20px}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<svg width="52" height="52" viewBox="0 0 206 196" aria-hidden="true">
+<g fill="#1E3442"><rect x="10" y="36" width="16" height="10" rx="2"/><rect x="186" y="8" width="16" height="10" rx="2"/><rect x="150" y="20" width="36" height="22" rx="3"/><rect x="26" y="48" width="34" height="22" rx="3"/><rect x="136" y="48" width="36" height="22" rx="3"/><rect x="40" y="76" width="34" height="22" rx="3"/><rect x="122" y="76" width="36" height="22" rx="3"/><rect x="68" y="132" width="60" height="22" rx="3"/><rect x="82" y="160" width="32" height="22" rx="3"/></g>
+<g fill="#74ACDF"><rect x="54" y="104" width="34" height="22" rx="3"/><rect x="108" y="104" width="36" height="22" rx="3"/></g>
+</svg>
+<div class="brand"><b>Vaca Muerta</b><span>consulting</span></div>
+</header>
+
+<main class="card">
+<h1>Verificación de certificados</h1>
+<p class="lead">Ingresá el código impreso en el certificado o escaneá su QR.</p>
+<form id="f" autocomplete="off">
+<label for="code">Código del certificado</label>
+<input id="code" name="c" placeholder="VMC-2026-XXXXXX" maxlength="40" spellcheck="false" required>
+<button type="submit">Verificar</button>
+</form>
+<div id="result" aria-live="polite"></div>
+</main>
+
+<div class="franja" aria-hidden="true"><i></i><i></i><i></i></div>
+<footer>
+Certificados de capacitación emitidos por Vaca Muerta Consulting · Lic. Víctor Javier Paredes, Licenciado en Higiene y Seguridad Laboral · Neuquén, Argentina.<br>
+Consultas: <a href="mailto:vparedes2@gmail.com">vparedes2@gmail.com</a> · <a href="https://victorparedes.ar/">victorparedes.ar</a>
+</footer>
+</div>
+
+<script>
+(function(){
+  var ICON_OK='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-7"/></svg>';
+  var ICON_BAD='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/></svg>';
+  var ICON_WARN='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 7v6M12 16.5v.5"/></svg>';
+  var res=document.getElementById('result'), input=document.getElementById('code');
+
+  function norm(c){return (c||'').trim().toUpperCase().replace(/\s+/g,'');}
+  function valid(c){return /^[A-Z0-9-]{6,40}$/.test(c);}
+  function fmtDate(s){
+    if(!s) return '';
+    var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s); if(!m) return s;
+    var meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    return parseInt(m[3],10)+' de '+meses[parseInt(m[2],10)-1]+' de '+m[1];
+  }
+  function status(cls,icon,text){
+    var d=document.createElement('div'); d.className='status '+cls; d.innerHTML=icon;
+    var s=document.createElement('span'); s.textContent=text; d.appendChild(s); return d;
+  }
+  function row(dl,k,v,big){
+    if(v===undefined||v===null||v==='') return;
+    var dt=document.createElement('dt'); dt.textContent=k;
+    var dd=document.createElement('dd'); dd.textContent=v; if(big) dd.className='big';
+    dl.appendChild(dt); dl.appendChild(dd);
+  }
+  function notFound(c){
+    res.innerHTML='';
+    res.appendChild(status('bad',ICON_BAD,'No encontramos un certificado con el código '+c+'.'));
+    var p=document.createElement('p'); p.className='note';
+    p.textContent='Revisá que el código esté bien escrito. Si el problema sigue, escribinos: un certificado que no figura aquí no fue emitido por Vaca Muerta Consulting.';
+    res.appendChild(p);
+  }
+  function render(d){
+    res.innerHTML='';
+    var today=new Date().toISOString().slice(0,10);
+    if(d.estado==='revocado'){
+      res.appendChild(status('bad',ICON_BAD,'Certificado revocado'));
+    }else if(d.vencimiento && d.vencimiento<today){
+      res.appendChild(status('warn',ICON_WARN,'Certificado auténtico, vencido el '+fmtDate(d.vencimiento)));
+    }else if(d.demo){
+      res.appendChild(status('warn',ICON_WARN,'Certificado de demostración: no acredita ninguna capacitación'));
+    }else{
+      res.appendChild(status('ok',ICON_OK,'Certificado válido'));
+    }
+    var dl=document.createElement('dl');
+    row(dl,'Participante',d.nombre,true);
+    row(dl,'Documento',d.dni_parcial?'DNI terminado en '+d.dni_parcial:'');
+    row(dl,'Curso',d.curso+(d.nivel?' · '+d.nivel:''));
+    row(dl,'Carga horaria',d.horas?d.horas+' horas reloj':'');
+    row(dl,'Modalidad',d.modalidad);
+    row(dl,'Cursado',d.fecha_inicio&&d.fecha_fin?'Del '+fmtDate(d.fecha_inicio)+' al '+fmtDate(d.fecha_fin):'');
+    row(dl,'Emitido',d.fecha_emision?fmtDate(d.fecha_emision):'');
+    row(dl,'Vence',d.vencimiento?fmtDate(d.vencimiento):'');
+    row(dl,'Firma',d.firma||'Lic. Víctor Javier Paredes');
+    row(dl,'Código',d.codigo);
+    res.appendChild(dl);
+    var p=document.createElement('p'); p.className='note';
+    p.textContent='Compará estos datos con el certificado impreso. Si no coinciden, el documento fue alterado.';
+    res.appendChild(p);
+  }
+  function check(c){
+    c=norm(c); input.value=c;
+    if(!valid(c)){ res.innerHTML=''; res.appendChild(status('bad',ICON_BAD,'El código no tiene un formato válido.')); return; }
+    res.innerHTML=''; res.appendChild(status('load','','Verificando…'));
+    fetch('/qr-verified/c/'+encodeURIComponent(c)+'.json',{cache:'no-store'})
+      .then(function(r){ if(r.status===404) return null; if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(d){ if(!d || norm(d.codigo)!==c) return notFound(c); render(d); })
+      .catch(function(){ res.innerHTML=''; res.appendChild(status('warn',ICON_WARN,'No se pudo consultar ahora. Probá de nuevo en unos minutos.')); });
+  }
+  document.getElementById('f').addEventListener('submit',function(e){
+    e.preventDefault(); var c=norm(input.value);
+    try{ history.replaceState(null,'','?c='+encodeURIComponent(c)); }catch(_){}
+    check(c);
+  });
+  var q=new URLSearchParams(location.search);
+  var start=q.get('c')||q.get('codigo')||location.hash.replace(/^#/,'');
+  if(start) check(start);
+})();
+</script>
+</body>
+</html>
