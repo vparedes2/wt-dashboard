@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Captación con HL250M · Cavitación y NPSH · Víctor Paredes</title>
+<meta name="description" content="Simulador de captación con bomba Godwin Dri-Prime HL250M: NPSH disponible y requerido, cavitación, vacío de succión, presión de descarga, golpe de ariete y cebado Venturi.">
+<meta property="og:title" content="Captación con HL250M · Cavitación y NPSH · Víctor Paredes">
+<meta property="og:url" content="https://victorparedes.ar/captacion/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a1117;--panel:rgba(16,26,34,.86);--line:#24343f;--ink:#e6eef3;--muted:#8fa3b0;--acc:#38bdf8;--ok:#34d399;--warn:#fbbf24;--crit:#f87171;--sev:#c026d3}
+*{box-sizing:border-box}
+html,body{margin:0;background:radial-gradient(1200px 700px at 70% -10%,#16324a 0,#0a1117 60%) fixed,#0a1117;color:var(--ink);font:14px/1.45 "IBM Plex Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Barlow Condensed",sans-serif;letter-spacing:.02em;margin:0}
+.mono{font-family:"IBM Plex Mono",monospace}
+header{padding:16px 20px 6px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:flex-end;justify-content:space-between}
+header h1{font-size:28px}
+header p{margin:2px 0 0;color:var(--muted);font-size:13px}
+header a{color:var(--acc);text-decoration:none;font-size:13px}
+.wrap{display:grid;grid-template-columns:330px minmax(0,1fr) 300px;gap:14px;padding:10px 20px 20px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;backdrop-filter:blur(6px)}
+.panel h2{font-size:17px;color:var(--acc);text-transform:uppercase;margin:0 0 10px}
+.ctl{margin:0 0 12px}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:#c9d6de;margin-bottom:3px}
+.ctl label b{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--ink)}
+.ctl small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+select{width:100%;background:#0f1a22;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px}
+.grp{border-top:1px solid var(--line);padding-top:10px;margin-top:4px}
+.grp h3{font-size:14px;color:var(--muted);text-transform:uppercase;margin:0 0 8px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+button{font:inherit;font-size:12.5px;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:#12212b;color:var(--ink);padding:6px 10px}
+button:hover{border-color:var(--acc)}
+button.pri{background:rgba(56,189,248,.16);border-color:rgba(56,189,248,.6)}
+.center{display:flex;flex-direction:column;gap:14px;min-width:0}
+#scene{width:100%;height:auto;display:block}
+.charts canvas{width:100%;display:block}
+#scene text{font-family:"IBM Plex Sans",system-ui,sans-serif}
+.lg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:#c9d6de;margin:-4px 0 6px}.lg span::before{content:"";display:inline-block;width:16px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--c)}
+.state{border-radius:12px;padding:10px 12px;margin-bottom:12px;border:1px solid}
+.state h3{font-size:20px}
+.state p{margin:4px 0 0;font-size:12.5px}
+.s-ok{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.5)}.s-ok h3{color:var(--ok)}
+.s-warn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.5)}.s-warn h3{color:var(--warn)}
+.s-crit{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.6)}.s-crit h3{color:var(--crit)}
+.s-sev{background:rgba(192,38,211,.14);border-color:rgba(192,38,211,.6)}.s-sev h3{color:#e879f9}
+.kv{display:grid;grid-template-columns:1fr auto;gap:3px 10px;font-size:12.5px;margin:0 0 10px}
+.kv dt{color:var(--muted)}.kv dd{margin:0;font-family:"IBM Plex Mono",monospace;text-align:right}
+.kv dd.ok{color:var(--ok)}.kv dd.warn{color:var(--warn)}.kv dd.crit{color:var(--crit)}
+.bar{height:8px;border-radius:6px;background:#1b2a34;overflow:hidden;margin:2px 0 10px}
+.bar i{display:block;height:100%;border-radius:6px}
+ul.al{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+ul.al li{font-size:12.5px;padding:7px 9px;border-radius:9px;border-left:3px solid;background:#101c24}
+ul.al li.ok{border-color:var(--ok)}ul.al li.warn{border-color:var(--warn)}ul.al li.crit{border-color:var(--crit)}ul.al li.info{border-color:var(--acc)}
+.note{color:var(--muted);font-size:11.5px;margin-top:10px}
+footer{padding:0 20px 24px;color:var(--muted);font-size:12px}
+footer a{color:var(--acc)}
+@media (max-width:1180px){.wrap{grid-template-columns:300px minmax(0,1fr)}.right{grid-column:1/-1}}
+#mini{display:none}
+@media (max-width:760px){#mini{display:flex;position:sticky;top:0;z-index:20;gap:10px;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(10,17,23,.95);border-bottom:1px solid var(--line);font-size:12.5px}#mini b{font-family:"Barlow Condensed";font-size:17px}.center{order:1}#ctrls{order:2}.right{order:3}.wrap{grid-template-columns:1fr;padding:10px 12px}header{padding:14px 14px 4px}.right{grid-column:auto}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Captación con Godwin Dri-Prime HL250M</h1>
+    <p>Cavitación, NPSH, vacío de succión, presión de descarga y golpe de ariete · curva de catálogo Xylem 95-1114-3000</p>
+  </div>
+  <a href="https://victorparedes.ar/">← victorparedes.ar</a>
+</header>
+
+<div id="mini"><b id="m_st">—</b><span class="mono" id="m_v"></span></div>
+<div class="wrap">
+  <!-- CONTROLES -->
+  <aside class="panel" id="ctrls">
+    <h2>Parámetros</h2>
+    <div class="ctl"><label>Velocidad de la bomba <b id="v_rpm"></b></label><input type="range" id="rpm" min="1200" max="2000" step="10" value="1800"><small>CAT C15 · 475 HP a 2000 rpm</small></div>
+    <div class="ctl"><label>Caudal (válvula de descarga) <b id="v_q"></b></label><input type="range" id="q" min="50" max="1250" step="5" value="800"><small id="s_q"></small></div>
+
+    <div class="grp"><h3>Succión</h3>
+      <div class="ctl"><label>Desnivel agua → piso de la bomba <b id="v_z"></b></label><input type="range" id="z" min="-2" max="8" step="0.1" value="3"><small>Se suman 0,91 m del piso al eje de succión. Negativo = bomba ahogada.</small></div>
+      <div class="ctl"><label>Largo de la manguera de succión <b id="v_L"></b></label><input type="range" id="L" min="3" max="40" step="1" value="12"></div>
+      <div class="row2">
+        <div class="ctl"><label>Diámetro</label><select id="D"><option value="10">10"</option><option value="12" selected>12" (brida)</option><option value="14">14"</option></select></div>
+        <div class="ctl"><label>Material</label><select id="mat"><option value="0.0001">Rígida corrugada lisa</option><option value="0.0005" selected>Manguera de succión</option><option value="0.0015">Acero usado</option></select></div>
+      </div>
+      <div class="ctl"><label>Codos y accesorios (cantidad) <b id="v_nk"></b></label><input type="range" id="nk" min="0" max="6" step="1" value="2"><small>Codo de radio largo, K ≈ 0,3 cada uno</small></div>
+      <div class="ctl"><label>Filtro de succión obstruido <b id="v_clog"></b></label><input type="range" id="clog" min="0" max="90" step="1" value="10"><small>Canasto / colador en la toma. Limpio K ≈ 1,0</small></div>
+      <div class="ctl"><label>Sumergencia del colador <b id="v_sub"></b></label><input type="range" id="sub" min="0.1" max="2.5" step="0.05" value="1.5"><small>Profundidad de la boca bajo el pelo de agua (vórtice)</small></div>
+    </div>
+
+    <div class="grp"><h3>Ambiente y agua</h3>
+      <div class="ctl"><label>Altitud del sitio <b id="v_alt"></b></label><input type="range" id="alt" min="0" max="1500" step="10" value="400"><small>Añelo ≈ 400 m s. n. m.</small></div>
+      <div class="ctl"><label>Temperatura del agua <b id="v_T"></b></label><input type="range" id="T" min="2" max="60" step="1" value="18"></div>
+      <div class="ctl"><label>Aire disuelto / arrastrado <b id="v_air"></b></label><input type="range" id="air" min="0" max="10" step="0.5" value="0"><small>Agua aireada o vórtice: el eyector Venturi trabaja continuo</small></div>
+    </div>
+
+    <div class="grp"><h3>Descarga y golpe de ariete</h3>
+      <div class="row2">
+        <div class="ctl"><label>Línea de impulsión</label><select id="Dd"><option value="10">10"</option><option value="12" selected>12" layflat</option><option value="14">14"</option></select></div>
+        <div class="ctl"><label>Tipo</label><select id="wave"><option value="300" selected>Layflat (a ≈ 300 m/s)</option><option value="450">HDPE (a ≈ 450 m/s)</option><option value="1100">Acero (a ≈ 1100 m/s)</option></select></div>
+      </div>
+      <div class="ctl"><label>Cierre de válvula aguas abajo <b id="v_tc"></b></label><input type="range" id="tc" min="0.5" max="60" step="0.5" value="20"><small>Tiempo de cierre · largo de la línea <b id="v_Ll"></b></small><input type="range" id="Ll" min="200" max="6000" step="100" value="2600"></div>
+    </div>
+    <div class="btns">
+      <button class="pri" id="prime">▶ Cebado en seco (Venturi)</button>
+      <button id="caseA">Caso Añelo (guía)</button>
+      <button id="reset">Restablecer</button>
+    </div>
+  </aside>
+
+  <!-- ESCENA + CURVAS -->
+  <main class="center">
+    <div class="panel" style="padding:8px"><svg id="scene" viewBox="0 0 900 380" aria-label="Esquema de la captación"></svg></div>
+    <div class="panel charts">
+      <h2>Curvas de la bomba a <span id="c_rpm"></span> rpm</h2>
+      <div class="lg"><span style="--c:#38bdf8">Altura a la velocidad elegida</span><span style="--c:#f87171">Altura con cavitación</span><span style="--c:#a78bfa">Rendimiento</span><span style="--c:#fbbf24">NPSH requerido</span><span style="--c:#34d399">NPSH disponible</span><span style="--c:rgba(52,211,153,.35)">Zona 70–120 % del mejor rendimiento</span></div><canvas id="ch" width="1100" height="580"></canvas>
+      <p class="note">Altura y rendimiento: curva de catálogo a 2000 rpm, escalada por leyes de afinidad. El catálogo no publica NPSHr: se estima a partir de la tabla de altura de succión del fabricante (agua a 20 °C, nivel del mar) y se escala con el cuadrado de la velocidad. Valores orientativos para capacitación; verificar con la curva certificada de la bomba.</p>
+    </div>
+  </main>
+
+  <!-- RESULTADOS -->
+  <aside class="panel right">
+    <div id="state" class="state s-ok"><h3>—</h3><p></p></div>
+    <h2>Succión</h2>
+    <dl class="kv" id="kvS"></dl>
+    <div class="mono" style="font-size:11.5px;color:var(--muted)">Margen NPSHa / NPSHr</div>
+    <div class="bar"><i id="mbar"></i></div>
+    <h2>Bomba y descarga</h2>
+    <dl class="kv" id="kvD"></dl>
+    <div class="mono" style="font-size:11.5px;color:var(--muted)">Carga del motor</div>
+    <div class="bar"><i id="pbar"></i></div>
+    <h2>Alertas</h2>
+    <ul class="al" id="al"></ul>
+  </aside>
+</div>
+<footer>Lic. Víctor Javier Paredes · Mat. PA 446 · Higiene y Seguridad Laboral · <a href="https://victorparedes.ar/">victorparedes.ar</a> · Datos de catálogo: Godwin Dri-Prime HL250M, Xylem, ref. 95-1114-3000. Herramienta didáctica: no reemplaza el cálculo de ingeniería ni la curva certificada.</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const G=9.81,RHO=1000,N0=2000,INCH=0.0254;
+// ---- datos de catálogo a 2000 rpm (digitalizados) ----
+const QH=[[0,123.2],[150,122.0],[300,120.2],[415,118.5],[544,112.2],[704,102.5],[847,91.8],[960,80.6],[1059,70.9],[1128,61.0],[1183,49.6],[1224,37.8]];
+const QE=[[0,0],[150,24],[300,45],[415,55],[544,65],[704,72],[847,74],[960,72],[1059,68],[1128,62],[1183,52],[1224,41]];
+const QMAX0=1224,QBEP0=847;
+// NPSHr a 2000 rpm, derivado de la tabla de succión (límites a 20 y 25 ft)
+const npshr0=q=>0.5+3.0e-6*q*q;
+// interpolación monótona (Fritsch-Carlson)
+function pchip(P){const n=P.length,x=P.map(p=>p[0]),y=P.map(p=>p[1]),d=[],m=[];
+ for(let i=0;i<n-1;i++)d.push((y[i+1]-y[i])/(x[i+1]-x[i]));
+ m[0]=d[0];m[n-1]=d[n-2];for(let i=1;i<n-1;i++)m[i]=d[i-1]*d[i]<=0?0:(3*(d[i-1]+d[i]))/((2*d[i]+d[i-1])/d[i-1]+(d[i]+2*d[i-1])/d[i]);
+ return t=>{if(t<=x[0])return y[0]+m[0]*(t-x[0]);if(t>=x[n-1])return y[n-1]+m[n-1]*(t-x[n-1]);let i=0;while(t>x[i+1])i++;
+  const h=x[i+1]-x[i],s=(t-x[i])/h,s2=s*s,s3=s2*s;return(2*s3-3*s2+1)*y[i]+(s3-2*s2+s)*h*m[i]+(-2*s3+3*s2)*y[i+1]+(s3-s2)*h*m[i+1]}}
+const H0=pchip(QH),E0=pchip(QE);
+const Hn=(q,n)=>{const r=n/N0;return H0(q/r)*r*r};
+const En=(q,n)=>Math.max(1,E0(q/(n/N0))-(n<N0?2.5*(1-n/N0):0));
+const NRn=(q,n)=>{const r=n/N0;return npshr0(q/r)*r*r};
+// propiedades
+const patm=h=>101.325*Math.pow(1-2.25577e-5*h,5.25588); // kPa
+const pv=T=>0.61094*Math.exp(17.625*T/(T+243.04)); // kPa (Magnus, agua)
+const nu=T=>1.792e-6/(1+0.0337*T+0.000221*T*T); // m²/s
+function fD(Re,eD){if(Re<2300)return 64/Math.max(Re,1);return 0.25/Math.pow(Math.log10(eD/3.7+5.74/Math.pow(Re,0.9)),2)}
+
+// ---- controles ----
+const ids=['rpm','q','z','L','D','mat','nk','clog','sub','alt','T','air','Dd','wave','tc','Ll'];
+const DEF={};ids.forEach(k=>DEF[k]=$(k).value);
+ids.forEach(k=>$(k).addEventListener('input',run));
+$('reset').onclick=()=>{ids.forEach(k=>$(k).value=DEF[k]);run()};
+$('caseA').onclick=()=>{const c={rpm:2000,q:860,z:5,L:10,D:'12',mat:'0.0005',nk:1,clog:0,sub:1,alt:400,T:18,air:0};Object.entries(c).forEach(([k,v])=>$(k).value=v);run()};
+
+let S={},prime={on:false,t0:0,dur:0},tAnim=0;
+const fmt=(v,d=1)=>Number(v).toLocaleString('es-AR',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+function calc(){
+ const n=+$('rpm').value,Qs=+$('q').value,z=+$('z').value+0.91,L=+$('L').value,D=+$('D').value*INCH,eps=+$('mat').value,nk=+$('nk').value,clog=+$('clog').value/100,
+  sub=+$('sub').value,alt=+$('alt').value,T=+$('T').value,air=+$('air').value,Dd=+$('Dd').value*INCH,a=+$('wave').value,tc=+$('tc').value,Ll=+$('Ll').value;
+ const r=n/N0,Qmax=QMAX0*r,Qbep=QBEP0*r;
+ let Q=Math.min(Qs,Qmax),qs=Q/3600;
+ const A=Math.PI*D*D/4,v=qs/A,hv=v*v/(2*G),Re=v*D/nu(T),f=fD(Re,eps/D);
+ const Kf=1.0/Math.pow(Math.max(0.1,1-clog),2),Kin=0.5,Ke=0.3*nk;
+ const hfl=f*L/D*hv,hfk=(Kin+Ke)*hv,hff=Kf*hv,hf=hfl+hfk+hff;
+ const Pa=patm(alt),Pv=pv(T),ha=Pa*1000/(RHO*G),hvap=Pv*1000/(RHO*G);
+ // NPSH disponible (aire arrastrado reduce el margen efectivo)
+ const NPSHa=ha-z-hf-hvap-0.08*air;
+ const NPSHr=NRn(Q,n),NPSHi=NPSHr*1.6; // incipiente aprox.
+ const def=NPSHr-NPSHa;
+ let drop=0; if(NPSHa<NPSHi){drop=0.03*Math.exp(1.15*def);} drop=Math.min(1,drop);
+ if(NPSHa>=NPSHr*1.25)drop=0;
+ const airDrop=Math.min(0.35,air*0.025);
+ const Hpump=Hn(Q,n),Heff=Hpump*(1-drop)*(1-airDrop),Qeff=Q*Math.sqrt(Math.max(0,1-drop))*(1-airDrop*0.6);
+ const eta=En(Q,n)/100*(1-0.5*drop);
+ // manovacuómetro en la brida de succión (manométrica)
+ const ps=Math.max(-(Pa-Pv),-(RHO*G*(z+hf+hv))/1000); // kPa (no puede bajar del vacío de vapor)
+ const pd=Math.max(0,ps+RHO*G*Heff/1000); // kPa man.
+ const P=RHO*G*(Qeff/3600)*Heff/Math.max(0.05,eta)/1000; // kW eje
+ const Pav=354*Math.min(1,0.55+0.45*r); // CAT C15 (curva de potencia aprox.)
+ const fuel=Math.max(12,P*0.215/0.84+4); // L/h
+ const Hshut=Hn(0,n),pshut=ps+RHO*G*Hshut/1000;
+ // golpe de ariete en la impulsión
+ const Ad=Math.PI*Dd*Dd/4,vd=(Qeff/3600)/Ad,Tcrit=2*Ll/a;
+ const dHj=a*vd/G,dH=tc<=Tcrit?dHj:dHj*Tcrit/tc;
+ const psurge=Math.max(pd,pd+RHO*G*dH/1000);
+ // vórtice (Hydraulic Institute 9.8): S = D(1+2,3 Fr) con D de la boca del colador (≈1,5 D)
+ const Db=1.5*D,vb=qs/(Math.PI*Db*Db/4),Fr=vb/Math.sqrt(G*Db),Smin=Db*(1+2.3*Fr);
+ // cebado Venturi: altura máxima 8,5 m a nivel del mar, corregida por presión atmosférica
+ const liftMax=8.5*Pa/101.325,liftOk=z<=liftMax;
+ const tPrime=z<=0?0:(A*(L+1.5)*1000/35)*Math.log(Pa/Math.max(1,Pa-RHO*G*z/1000))*1.4+8; // s, eyector ~35 L/s aire libre
+ return {n,r,Qs,Q,Qmax,Qbep,v,hv,Re,f,hf,hfl,hfk,hff,Kf,ha,hvap,NPSHa,NPSHr,NPSHi,def,drop,airDrop,Hpump,Heff,Qeff,eta,ps,pd,P,Pav,fuel,Hshut,pshut,vd,dH,dHj,Tcrit,psurge,Smin,sub,z,liftMax,liftOk,tPrime,air,T,Pa,Pv,clog,a,tc}
+}
+
+function level(s){
+ if(s.NPSHa<=0.3||s.drop>=0.5)return['s-sev','Colapso de succión','La columna de agua se corta: la bomba pierde cebado y el Venturi intenta recuperarlo. Daño acelerado del impulsor y del sello.'];
+ if(s.drop>=0.1)return['s-crit','Cavitación severa',`Caída de altura ${fmt(s.drop*100,0)} %: ruido de grava, vibración y picado del impulsor de acero fundido.`];
+ if(s.NPSHa<s.NPSHr*1.1)return['s-crit','Cavitación desarrollada','NPSH disponible por debajo o al límite del requerido (criterio 3 % de caída de altura). Erosión del impulsor.'];
+ if(s.NPSHa<s.NPSHr*1.5)return['s-warn','Cavitación incipiente','Margen chico: aparecen burbujas en el ojo del impulsor y ruido intermitente. Recomendado NPSHa ≥ 1,3 a 1,5 × NPSHr.'];
+ return['s-ok','Succión segura','NPSH disponible con margen suficiente sobre el requerido.'];
+}
+
+function run(){
+ const s=calc();S=s;
+ $('v_rpm').textContent=s.n+' rpm';$('c_rpm').textContent=s.n;
+ $('v_q').textContent=fmt(s.Qs,0)+' m³/h';
+ $('s_q').textContent=`Máx. a ${s.n} rpm ≈ ${fmt(s.Qmax,0)} m³/h · mejor rendimiento ≈ ${fmt(s.Qbep,0)} m³/h`;
+ $('v_z').textContent=fmt(+$('z').value,1)+' m (+0,91 = '+fmt(s.z,2)+' m)';$('v_L').textContent=$('L').value+' m';$('v_nk').textContent=$('nk').value;
+ $('v_clog').textContent=$('clog').value+' %';$('v_sub').textContent=fmt(+$('sub').value,2)+' m';$('v_alt').textContent=$('alt').value+' m';
+ $('v_T').textContent=$('T').value+' °C';$('v_air').textContent=fmt(+$('air').value,1)+' %';$('v_tc').textContent=fmt(+$('tc').value,1)+' s';$('v_Ll').textContent=fmt(+$('Ll').value,0)+' m';
+ const [cl,ti,tx]=level(s);const st=$('state');st.className='state '+cl;st.innerHTML=`<h3>${ti}</h3><p>${tx}</p>`;
+ $('m_st').textContent=ti;$('m_st').style.color={'s-ok':'var(--ok)','s-warn':'var(--warn)','s-crit':'var(--crit)','s-sev':'#e879f9'}[cl];$('m_v').textContent=`NPSHa ${fmt(s.NPSHa,1)} / NPSHr ${fmt(s.NPSHr,1)} m · ${fmt(s.Qeff,0)} m³/h`;
+ const ratio=s.NPSHa/s.NPSHr,cR=ratio>=1.5?'ok':ratio>=1.1?'warn':'crit';
+ const kv=(el,rows)=>$(el).innerHTML=rows.map(([k,v,c])=>`<dt>${k}</dt><dd class="${c||''}">${v}</dd>`).join('');
+ kv('kvS',[
+  ['Presión atmosférica',fmt(s.Pa,1)+' kPa · '+fmt(s.ha,2)+' m'],
+  ['Presión de vapor ('+s.T+' °C)',fmt(s.Pv,2)+' kPa · '+fmt(s.hvap,2)+' m'],
+  ['Altura de succión estática',fmt(s.z,2)+' m',s.z>6?'warn':''],
+  ['Velocidad en la succión',fmt(s.v,2)+' m/s',s.v>3?'crit':s.v>2.4?'warn':''],
+  ['Pérdida manguera',fmt(s.hfl,2)+' m'],['Pérdida accesorios y entrada',fmt(s.hfk,2)+' m'],
+  ['Pérdida del filtro',fmt(s.hff,2)+' m',s.hff>1?'crit':s.hff>0.5?'warn':''],
+  ['NPSH disponible',fmt(s.NPSHa,2)+' m',cR],['NPSH requerido',fmt(s.NPSHr,2)+' m'],
+  ['Relación NPSHa / NPSHr',fmt(ratio,2),cR],
+  ['Manovacuómetro succión',fmt(s.ps,0)+' kPa · '+fmt(-s.ps*0.2953,1)+' inHg'+(s.ps<=-(s.Pa-s.Pv)+0.5?' (vacío máx.)':''),s.ps<-75?'crit':s.ps<-60?'warn':'']
+ ]);
+ const mb=$('mbar');mb.style.width=Math.min(100,ratio/2.5*100)+'%';mb.style.background=cR==='ok'?'var(--ok)':cR==='warn'?'var(--warn)':'var(--crit)';
+ const bar=v=>v/100; const pdb=s.pd/100,psb=s.psurge/100,load=s.P/s.Pav;
+ kv('kvD',[
+  ['Caudal entregado',fmt(s.Qeff,0)+' m³/h'+(s.Qs>s.Qmax?' (fin de curva)':''),s.Qeff<s.Q*0.95?'crit':''],
+  ['Altura de la bomba',fmt(s.Heff,1)+' m'+(s.drop>0.005?` (−${fmt(s.drop*100,0)} %)`:''),s.drop>=0.03?'crit':''],
+  ['Rendimiento hidráulico',s.Qeff<5?'—':fmt(s.eta*100,0)+' %',s.eta<0.5?'warn':''],
+  ['Punto vs. mejor rendimiento',fmt(s.Q/s.Qbep*100,0)+' %',(s.Q/s.Qbep<0.7||s.Q/s.Qbep>1.2)?'warn':''],
+  ['Presión de descarga',fmt(pdb,2)+' bar · '+fmt(s.pd*0.145,0)+' psi',s.pd*0.145>175?'crit':s.pd*0.145>160?'warn':''],
+  ['A válvula cerrada',fmt(s.pshut/100,2)+' bar · '+fmt(s.pshut*0.145,0)+' psi',s.pshut*0.145>175?'warn':''],
+  ['Sobrepresión por cierre',fmt(s.dH,0)+' m · pico '+fmt(psb,1)+' bar',s.psurge*0.145>263?'crit':s.psurge*0.145>175?'warn':''],
+  ['Potencia al eje',fmt(s.P,0)+' kW · '+fmt(s.P*1.341,0)+' HP',load>1?'crit':load>0.9?'warn':''],
+  ['Consumo de gasoil (est.)',fmt(s.fuel,0)+' L/h']
+ ]);
+ const pb=$('pbar');pb.style.width=Math.min(100,load*100)+'%';pb.style.background=load>1?'var(--crit)':load>0.9?'var(--warn)':'var(--ok)';
+ // alertas
+ const al=[];
+ if(s.Qs>s.Qmax)al.push(['warn',`A ${s.n} rpm la bomba no llega a ${fmt(s.Qs,0)} m³/h: el máximo de la curva es ${fmt(s.Qmax,0)} m³/h.`]);
+ if(s.v>2.4)al.push([s.v>3?'crit':'warn',`Velocidad de succión ${fmt(s.v,2)} m/s (recomendado ≤ 2,4 m/s). Usar manguera de mayor diámetro o bajar caudal.`]);
+ if(s.clog>=0.3)al.push([s.clog>=0.6?'crit':'warn',`Filtro obstruido ${fmt(s.clog*100,0)} %: pierde ${fmt(s.hff,2)} m de NPSH. Programar limpieza del canasto.`]);
+ if(s.sub<s.Smin)al.push(['crit',`Sumergencia ${fmt(s.sub,2)} m menor a la mínima de ${fmt(s.Smin,2)} m (criterio Hydraulic Institute): riesgo de vórtice y entrada de aire.`]);
+ if(s.air>0)al.push(['warn',`Aire arrastrado ${fmt(s.air,1)} %: el eyector Venturi del Dri-Prime trabaja continuo y la bomba pierde altura y caudal.`]);
+ if(!s.liftOk)al.push(['crit',`Desnivel de ${fmt(s.z,2)} m supera la altura de cebado en seco a esta altitud (${fmt(s.liftMax,1)} m). No ceba.`]);
+ else if(s.z>0)al.push(['info',`Cebado Venturi posible (máx. ${fmt(s.liftMax,1)} m a ${$('alt').value} m s. n. m.). Que cebe no significa que opere sin cavitar.`]);
+ if(s.Q/s.Qbep<0.4)al.push(['warn','Caudal muy por debajo del mejor rendimiento: recirculación interna, calentamiento y vibración.']);
+ if(s.Q/s.Qbep>1.2&&s.Qs<=s.Qmax)al.push(['warn','Operando a la derecha del mejor rendimiento: sube el NPSH requerido y baja el rendimiento.']);
+ if(s.pd*0.145>175)al.push(['crit','Presión de descarga sobre la máxima de trabajo (175 psi / 12 bar).']);
+ if(s.psurge*0.145>263)al.push(['crit',`Un cierre en ${fmt(s.tc,1)} s genera ${fmt(s.psurge/100,1)} bar: supera la presión máxima de carcasa (263 psi / 18 bar). Cerrar más lento que ${fmt(s.Tcrit,0)} s o instalar alivio.`]);
+ else if(s.psurge*0.145>175)al.push(['warn',`Cierre en ${fmt(s.tc,1)} s: pico de ${fmt(s.psurge/100,1)} bar sobre la presión de trabajo. Tiempo crítico 2L/a = ${fmt(s.Tcrit,1)} s.`]);
+ if(s.P>s.Pav)al.push(['crit',`El motor no da la potencia: requiere ${fmt(s.P,0)} kW y a ${s.n} rpm dispone ≈ ${fmt(s.Pav,0)} kW.`]);
+ if(s.T>=40)al.push(['warn',`Agua a ${s.T} °C: la presión de vapor sube a ${fmt(s.hvap,2)} m y reduce el NPSH disponible.`]);
+ if(!al.length)al.push(['ok','Sin observaciones para estas condiciones.']);
+ $('al').innerHTML=al.map(([c,t])=>`<li class="${c}">${t}</li>`).join('');
+ drawChart(s);
+}
+
+// ---- gráfico ----
+function drawChart(s){
+ const c=$('ch'),x=c.getContext('2d'),W=c.width,H=c.height;x.clearRect(0,0,W,H);
+ const L=70,R=70,T1=34,B1=340,T2=384,B2=530,Qm=1300;
+ const X=q=>L+(W-L-R)*q/Qm,Y1=h=>B1-(B1-T1)*h/130,Y2=h=>B2-(B2-T2)*h/10,YE=e=>B1-(B1-T1)*e/100;
+ x.font='22px IBM Plex Sans, sans-serif';x.lineWidth=1;
+ // grillas
+ x.strokeStyle='#1e2d37';x.fillStyle='#8fa3b0';
+ for(let q=0;q<=Qm;q+=100){x.beginPath();x.moveTo(X(q),T1);x.lineTo(X(q),B1);x.moveTo(X(q),T2);x.lineTo(X(q),B2);x.stroke();if(q%200===0)x.fillText(q,X(q)-18,B2+26)}
+ for(let h=0;h<=130;h+=20){x.beginPath();x.moveTo(L,Y1(h));x.lineTo(W-R,Y1(h));x.stroke();x.fillText(h,L-44,Y1(h)+7)}
+ for(let h=0;h<=10;h+=2){x.beginPath();x.moveTo(L,Y2(h));x.lineTo(W-R,Y2(h));x.stroke();x.fillText(h,L-30,Y2(h)+7)}
+ for(let e=0;e<=100;e+=20)x.fillText(e+'%',W-R+8,YE(e)+7);
+ x.fillStyle='#c9d6de';x.fillText('Altura (m)',L-60,T1-12);x.fillText('NPSH (m)',L-60,T2-10);x.fillText('Rend.',W-R+4,T1-12);x.textAlign='right';x.fillText('Caudal (m³/h)',W-R,H-4);x.textAlign='left';
+ // curvas de otras rpm
+ [1200,1400,1600,1800,2000].forEach(n=>{if(n===s.n)return;const r=n/N0;x.strokeStyle='rgba(143,163,176,.35)';x.lineWidth=1.5;x.beginPath();
+  for(let q=0;q<=QMAX0*r;q+=10){const h=Hn(q,n);q?x.lineTo(X(q),Y1(h)):x.moveTo(X(q),Y1(h))}x.stroke();x.fillStyle='rgba(143,163,176,.8)';x.font='17px IBM Plex Sans, sans-serif';x.fillText(n,X(QMAX0*r)+6,Y1(Hn(QMAX0*r,n))+6)});
+ x.font='22px IBM Plex Sans, sans-serif';
+ // zona recomendada 70-120 % BEP
+ x.fillStyle='rgba(52,211,153,.07)';x.fillRect(X(s.Qbep*0.7),T1,X(s.Qbep*1.2)-X(s.Qbep*0.7),B1-T1);
+ // rendimiento
+ x.strokeStyle='#a78bfa';x.lineWidth=2;x.setLineDash([8,6]);x.beginPath();for(let q=0;q<=s.Qmax;q+=10){const e=En(q,s.n);q?x.lineTo(X(q),YE(e)):x.moveTo(X(q),YE(e))}x.stroke();x.setLineDash([]);
+ // altura a rpm actual
+ x.strokeStyle='#38bdf8';x.lineWidth=3.5;x.beginPath();for(let q=0;q<=s.Qmax;q+=10){const h=Hn(q,s.n);q?x.lineTo(X(q),Y1(h)):x.moveTo(X(q),Y1(h))}x.stroke();
+ // curva degradada por cavitación (con las condiciones actuales de succión)
+ x.strokeStyle='#f87171';x.lineWidth=2.5;x.beginPath();let st=false;
+ for(let q=10;q<=s.Qmax;q+=10){const nr=NRn(q,s.n),qs=q/3600;const A=Math.PI*Math.pow(+$('D').value*INCH,2)/4,v=qs/A,hv=v*v/(2*G);
+  const hf=hv*(s.f*(+$('L').value)/(+$('D').value*INCH)+0.5+0.3*(+$('nk').value)+s.Kf);const na=s.ha-s.z-hf-s.hvap-0.08*s.air;
+  let d=0;if(na<nr*1.6)d=Math.min(1,0.03*Math.exp(1.15*(nr-na)));if(na>=nr*1.25)d=0;
+  if(d>0.005){const h=Hn(q,s.n)*(1-d);if(!st){x.moveTo(X(q),Y1(Hn(q,s.n)));st=true}x.lineTo(X(q),Y1(h))}}
+ x.stroke();
+ // NPSHr y NPSHa
+ x.strokeStyle='#fbbf24';x.lineWidth=3;x.beginPath();for(let q=0;q<=s.Qmax;q+=10){const h=NRn(q,s.n);q?x.lineTo(X(q),Y2(h)):x.moveTo(X(q),Y2(h))}x.stroke();
+ x.strokeStyle='#34d399';x.beginPath();for(let q=0;q<=s.Qmax;q+=10){const qs=q/3600,D=+$('D').value*INCH,A=Math.PI*D*D/4,v=qs/A,hv=v*v/(2*G);
+  const Re=v*D/nu(s.T),f=q?fD(Re,+$('mat').value/D):0;const hf=hv*(f*(+$('L').value)/D+0.5+0.3*(+$('nk').value)+s.Kf);const na=Math.max(-2,Math.min(10,s.ha-s.z-hf-s.hvap-0.08*s.air));q?x.lineTo(X(q),Y2(na)):x.moveTo(X(q),Y2(na))}x.stroke();
+ // punto de operación
+ x.fillStyle='#fff';x.strokeStyle='#0a1117';x.lineWidth=3;
+ x.beginPath();x.arc(X(s.Q),Y1(s.Heff),9,0,7);x.fill();x.stroke();
+ x.beginPath();x.arc(X(s.Q),Y2(Math.max(0,s.NPSHa)),7,0,7);x.fill();x.stroke();
+ x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=1.5;x.setLineDash([5,5]);x.beginPath();x.moveTo(X(s.Q),T1);x.lineTo(X(s.Q),B2);x.stroke();x.setLineDash([]);
+}
+
+// ---- escena SVG ----
+const svg=$('scene'),NS='http://www.w3.org/2000/svg';
+function el(t,a,p=svg){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e}
+function buildScene(){svg.innerHTML='';
+ const d=el('defs',{});const lg=el('linearGradient',{id:'wat',x1:0,y1:0,x2:0,y2:1},d);el('stop',{offset:0,'stop-color':'#2f7fb0'},lg);el('stop',{offset:1,'stop-color':'#0c3550'},lg);
+ const sk=el('linearGradient',{id:'sky',x1:0,y1:0,x2:0,y2:1},d);el('stop',{offset:0,'stop-color':'#13293a'},sk);el('stop',{offset:1,'stop-color':'#0b1720'},sk);
+ el('rect',{x:0,y:0,width:900,height:380,fill:'url(#sky)'});
+ svg.G={};
+ svg.G.bank=el('path',{fill:'#5b4a37',stroke:'#3d3124'});
+ svg.G.water=el('rect',{x:0,width:430,height:200,fill:'url(#wat)'});
+ svg.G.wl=el('line',{x1:0,x2:430,stroke:'#9bd3f5','stroke-width':2,'stroke-dasharray':'10 6'});
+ svg.G.dline=el('path',{fill:'none',stroke:'#2d6e92','stroke-width':12,'stroke-linecap':'round'});
+ svg.G.hose=el('path',{fill:'none',stroke:'#1b1b1b','stroke-width':16,'stroke-linecap':'round'});
+ svg.G.hoseW=el('path',{fill:'none',stroke:'#3a95cf','stroke-width':9,'stroke-linecap':'round'});
+ svg.G.strain=el('rect',{width:44,height:34,rx:5,fill:'#6b7680',stroke:'#2b3238'});
+ svg.G.mesh=el('g',{});
+ svg.G.pump=el('g',{});
+ svg.G.bub=el('g',{});
+ svg.G.vort=el('path',{fill:'none',stroke:'#cdeeff','stroke-width':2,opacity:0});
+ svg.G.txt=el('g',{});
+ svg.G.gs=el('g',{});svg.G.gd=el('g',{});
+}
+function gauge(g,x,y,val,min,max,label,unit,red){g.innerHTML='';
+ el('circle',{cx:x,cy:y,r:30,fill:'#f4f1e8',stroke:'#333','stroke-width':3},g);
+ const a0=-210*Math.PI/180,a1=30*Math.PI/180,ang=v=>a0+(a1-a0)*(Math.min(max,Math.max(min,v))-min)/(max-min);
+ if(red!=null){const ra=ang(red),rb=a1;el('path',{d:`M${x+24*Math.cos(ra)} ${y+24*Math.sin(ra)} A24 24 0 0 1 ${x+24*Math.cos(rb)} ${y+24*Math.sin(rb)}`,stroke:'#d33',fill:'none','stroke-width':5},g)}
+ for(let i=0;i<=10;i++){const a=a0+(a1-a0)*i/10;el('line',{x1:x+22*Math.cos(a),y1:y+22*Math.sin(a),x2:x+27*Math.cos(a),y2:y+27*Math.sin(a),stroke:'#333','stroke-width':1.5},g)}
+ const a=ang(val);el('line',{x1:x,y1:y,x2:x+21*Math.cos(a),y2:y+21*Math.sin(a),stroke:'#c0261d','stroke-width':3,'stroke-linecap':'round'},g);el('circle',{cx:x,cy:y,r:3.5,fill:'#222'},g);
+ const t=el('text',{x:x,y:y+46,'text-anchor':'middle',fill:'#e6eef3','font-size':12},g);t.textContent=label;
+ const u=el('text',{x:x,y:y+12,'text-anchor':'middle',fill:'#333','font-size':8.5},g);u.textContent=unit;
+}
+function drawScene(dt){
+ const s=S;if(!s.n)return;const g=svg.G;
+ const zpx=19,ground=205; // y del piso de la bomba
+ let wl=ground+(+$('z').value)*zpx; wl=Math.max(150,Math.min(352,wl));
+ const pumpX=560,flangeY=ground-0.91*zpx;
+ // nivel de agua durante el cebado
+ g.water.setAttribute('y',wl);g.wl.setAttribute('y1',wl);g.wl.setAttribute('y2',wl);
+ g.bank.setAttribute('d',`M430 ${Math.min(wl+40,370)} L480 ${ground} L900 ${ground} L900 380 L380 380 Z`);
+ const sub=Math.min(2.5,+$('sub').value)*zpx,sy=wl+sub+10,sx=150;
+ g.strain.setAttribute('x',sx-22);g.strain.setAttribute('y',sy-17);
+ g.mesh.innerHTML='';const cl=s.clog;for(let i=0;i<5;i++){el('line',{x1:sx-18+i*9,y1:sy-14,x2:sx-18+i*9,y2:sy+14,stroke:'#2b3238','stroke-width':1.3},g.mesh)}
+ for(let i=0;i<Math.round(cl*14);i++){el('circle',{cx:sx-18+((i*37)%36),cy:sy-12+((i*53)%26),r:3.2,fill:'#4a3b22',opacity:.9},g.mesh)}
+ const path=`M${sx} ${sy-17} C ${sx} ${wl-30}, 350 ${Math.min(wl,ground)-40}, 470 ${flangeY} L ${pumpX-40} ${flangeY}`;
+ g.hose.setAttribute('d',path);
+ // agua dentro de la manguera (cebado)
+ let fill=1;if(prime.on){const p=Math.min(1,(performance.now()-prime.t0)/1000/prime.dur);fill=p;if(p>=1)prime.on=false}
+ const len=g.hose.getTotalLength();g.hoseW.setAttribute('d',path);g.hoseW.setAttribute('stroke-dasharray',`${len*fill} ${len}`);
+ g.hoseW.setAttribute('stroke',s.drop>0.1?'#9fc9e4':'#3a95cf');
+ // bomba
+ const P=g.pump;P.innerHTML='';
+ el('rect',{x:pumpX-30,y:ground-58,width:300,height:58,rx:6,fill:'#1d3b2a',stroke:'#0f2318'},P);
+ el('rect',{x:pumpX+110,y:ground-112,width:150,height:58,rx:6,fill:'#f2c200',stroke:'#7a6200'},P);
+ const t1=el('text',{x:pumpX+185,y:ground-78,'text-anchor':'middle','font-size':13,fill:'#2b2400'},P);t1.textContent='CAT C15';
+ el('circle',{cx:pumpX,cy:flangeY,r:30,fill:'#2f6b8f',stroke:'#123246','stroke-width':3},P);
+ const rot=(tAnim*s.n/60*360/40)%360;const imp=el('g',{transform:`rotate(${rot} ${pumpX} ${flangeY})`},P);
+ for(let i=0;i<6;i++){el('path',{d:`M${pumpX} ${flangeY} q 8 -10 22 -14`,stroke:'#cfe3ef','stroke-width':3,fill:'none',transform:`rotate(${i*60} ${pumpX} ${flangeY})`},imp)}
+ el('rect',{x:pumpX+30,y:flangeY-38,width:36,height:24,rx:3,fill:'#8aa0ad',stroke:'#4d5c66'},P);
+ const vt=el('text',{x:pumpX+48,y:flangeY-44,'text-anchor':'middle','font-size':10,fill:'#9fb3bf'},P);vt.textContent='Venturi';
+ el('text',{x:pumpX-30,y:ground+18,fill:'#9fb3bf','font-size':12},P).textContent='HL250M · eje de succión a 0,91 m';
+ g.dline.setAttribute('d',`M${pumpX+20} ${flangeY-30} L ${pumpX+20} ${ground-128} L 890 ${ground-128}`);
+ // burbujas de cavitación en el ojo del impulsor
+ g.bub.innerHTML='';const intens=s.NPSHa<s.NPSHr*1.5?Math.min(1,(s.NPSHr*1.5-s.NPSHa)/(s.NPSHr*1.2)+0.15):0;
+ const nb=Math.round(intens*40);for(let i=0;i<nb;i++){const a=(i*137.5+tAnim*220)%360*Math.PI/180,r=6+((i*7+tAnim*40)%22);
+  el('circle',{cx:pumpX+r*Math.cos(a),cy:flangeY+r*Math.sin(a),r:1.5+((i*3)%3),fill:'#fff',opacity:.85},g.bub)}
+ // vórtice
+ if(s.sub<s.Smin){const vx=sx;g.vort.setAttribute('d',`M${vx-18} ${wl} Q ${vx} ${wl+12} ${vx-6} ${wl+20} Q ${vx+8} ${wl+28} ${vx} ${sy-20}`);g.vort.setAttribute('opacity',.9)}else g.vort.setAttribute('opacity',0);
+ // textos de cotas
+ g.txt.innerHTML='';const T=(x,y,t,c='#cfe0ea',sz=12)=>{const e=el('text',{x,y,fill:c,'font-size':sz},g.txt);e.textContent=t};
+ el('line',{x1:470,y1:wl,x2:470,y2:flangeY,stroke:'#fbbf24','stroke-width':1.5,'stroke-dasharray':'4 3'},g.txt);
+ {const e=el('text',{x:464,y:(wl+flangeY)/2+4,fill:'#fbbf24','font-size':12,'text-anchor':'end'},g.txt);e.textContent='Hs '+fmt(s.z,2)+' m'}
+ T(20,Math.min(368,wl+22),'Río / pileta','#bfe3f7');
+ T(sx-40,Math.min(372,sy+36),'Colador '+fmt(s.clog*100,0)+' % obstruido','#e6eef3',11);
+ if(s.sub<s.Smin)T(sx+20,wl+16,'vórtice: entra aire','#f87171',11);
+ T(600,ground-140,'Impulsión → '+fmt(s.Qeff,0)+' m³/h','#9fd0ec');
+ if(performance.now()-noPrime<4000&&!s.liftOk)T(20,26,'No ceba: desnivel mayor a '+fmt(s.liftMax,1)+' m a esta altitud','#f87171',14);
+ else if(prime.on)T(20,26,'Cebando con el eyector Venturi… '+fmt(Math.max(0,prime.dur-(performance.now()-prime.t0)/1000),0)+' s','#38bdf8',14);
+ else if(intens>0)T(20,26,s.drop>=0.1?'Cavitación severa en el impulsor':'Burbujas de vapor en el ojo del impulsor','#f87171',14);
+ // manómetros
+ gauge(g.gs,pumpX-90,flangeY-58,-s.ps,0,100,fmt(s.ps,0)+' kPa','vacío kPa',75);
+ el('line',{x1:830,y1:ground-128,x2:830,y2:ground-160,stroke:'#555','stroke-width':4},g.gd.parentNode===svg?g.txt:g.txt);gauge(g.gd,830,ground-165,s.pd*0.145,0,300,fmt(s.pd*0.145,0)+' psi','psi',175);
+}
+let noPrime=0;$('prime').onclick=()=>{const s=S;if(!s.liftOk){noPrime=performance.now();return}prime={on:true,t0:performance.now(),dur:Math.max(3,Math.min(90,s.tPrime))}};
+buildScene();run();
+let last=performance.now();function loop(t){const dt=(t-last)/1000;last=t;tAnim+=dt;drawScene(dt);requestAnimationFrame(loop)}requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
