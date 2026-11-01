@@ -72,6 +72,7 @@ Consultas: <a href="mailto:vparedes2@gmail.com">vparedes2@gmail.com</a> · <a hr
 </footer>
 </div>
 
+<script src="/qr-verified/config.js"></script>
 <script>
 (function(){
   var ICON_OK='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-7"/></svg>';
@@ -136,8 +137,17 @@ Consultas: <a href="mailto:vparedes2@gmail.com">vparedes2@gmail.com</a> · <a hr
     c=norm(c); input.value=c;
     if(!valid(c)){ res.innerHTML=''; res.appendChild(status('bad',ICON_BAD,'El código no tiene un formato válido.')); return; }
     res.innerHTML=''; res.appendChild(status('load','','Verificando…'));
-    fetch('/qr-verified/c/'+encodeURIComponent(c)+'.json',{cache:'no-store'})
-      .then(function(r){ if(r.status===404) return null; if(!r.ok) throw new Error(r.status); return r.json(); })
+    var fromFile=function(){
+      return fetch('/qr-verified/c/'+encodeURIComponent(c)+'.json',{cache:'no-store'})
+        .then(function(r){ if(r.status===404) return null; if(!r.ok) throw new Error(r.status); return r.json(); });
+    };
+    var fromApi=function(){
+      if(!window.VMC_API) return Promise.resolve(null);
+      return fetch(window.VMC_API+'?codigo='+encodeURIComponent(c),{cache:'no-store'})
+        .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function(j){ return j&&j.ok?j.cert:null; });
+    };
+    fromApi().then(function(d){ return d||fromFile(); })
       .then(function(d){ if(!d || norm(d.codigo)!==c) return notFound(c); render(d); })
       .catch(function(){ res.innerHTML=''; res.appendChild(status('warn',ICON_WARN,'No se pudo consultar ahora. Probá de nuevo en unos minutos.')); });
   }

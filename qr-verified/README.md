@@ -1,20 +1,20 @@
 # Verificador de certificados · Vaca Muerta Consulting
 
 - Página pública: https://victorparedes.ar/qr-verified/?c=CODIGO
-- Generador interno (no enlazado): https://victorparedes.ar/qr-verified/generar.html
+- ABM interno (no enlazado, con clave): https://victorparedes.ar/qr-verified/generar.html
 - Ejemplo: https://victorparedes.ar/qr-verified/?c=VMC-DEMO-0001
 
-## Emitir un certificado
+## Dónde están los datos
 
-1. Abrí `generar.html`, cargá los datos y tocá **Generar código y QR**.
-2. Descargá el `.json` y subilo a `qr-verified/c/` (el nombre del archivo es el código, p. ej. `VMC-2026-K7P4QX.json`).
-3. Descargá el QR y pegalo en el certificado, con el código escrito debajo.
+En la planilla **VMC · Certificados** de Google Drive. Una aplicación web de Apps Script
+(el código se instala desde la planilla: Extensiones → Apps Script) hace de API:
 
-## Revocar un certificado
+- `GET ?codigo=…` devuelve los datos públicos de un certificado (el DNI solo con sus 3 últimos dígitos).
+- `POST` con la clave permite listar, dar de alta, modificar, revocar, reactivar y eliminar.
 
-Editá su `.json` y cambiá `"estado": "vigente"` por `"estado": "revocado"`.
+La URL de esa aplicación (termina en `/exec`) va en `config.js`.
+Los archivos de `c/` siguen funcionando como respaldo (por ejemplo, el certificado de demostración).
 
-## Datos que se publican
+## Firma
 
-Nombre, últimos 3 dígitos del DNI, curso, horas, modalidad y fechas. El DNI completo nunca se sube.
-Los códigos son aleatorios, para que no se puedan adivinar recorriendo números.
+La imagen de la firma se carga en el ABM y queda guardada solo en ese navegador. No se sube al repositorio ni a Drive.

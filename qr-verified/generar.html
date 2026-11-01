@@ -3,39 +3,54 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Generar certificado · Vaca Muerta Consulting</title>
+<title>Certificados · ABM · Vaca Muerta Consulting</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap">
 <style>
-:root{--ink:#1E3442;--ink2:#3A4D5A;--sky:#74ACDF;--stone:#E6E3DA;color-scheme:light}
+:root{--ink:#1E3442;--ink2:#3A4D5A;--sky:#74ACDF;--stone:#E6E3DA;--ok:#1F7A4D;--okbg:#E3F3EA;--bad:#9B2C2C;--badbg:#F8E5E5;color-scheme:light}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--stone);color:var(--ink);font-family:"Archivo",system-ui,sans-serif;line-height:1.5}
-.wrap{max-width:1180px;margin:0 auto;padding:28px 16px 48px}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 16px 48px}
 h1{margin:0 0 4px;font-size:26px}
-h2{margin:0 0 12px;font-size:20px}
+h2{margin:0 0 14px;font-size:20px}
 p.lead{margin:0 0 20px;color:var(--ink2)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(440px,100%),1fr));gap:20px}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:12px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
+#f{max-width:820px}
 .card{background:#fff;border-radius:12px;padding:22px}
 .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
 .full{grid-column:1/-1}
 label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600}
 input,select{font:inherit;font-size:15px;font-weight:400;padding:9px 10px;border:1.5px solid #A9B4BC;border-radius:7px;color:var(--ink);min-width:0;background:#fff}
-input:focus,select:focus{outline:3px solid var(--sky);outline-offset:1px}
+input:focus,select:focus,button:focus-visible{outline:3px solid var(--sky);outline-offset:1px}
 .hint{font-size:12px;font-weight:500;color:#2E5E8A;min-height:18px}
 .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
-button,.btn{font:inherit;font-weight:700;font-size:15px;padding:11px 18px;min-height:44px;border:0;border-radius:8px;background:var(--ink);color:#fff;cursor:pointer;display:inline-flex;align-items:center}
+button,.btn{font:inherit;font-weight:700;font-size:15px;padding:10px 16px;min-height:44px;border:0;border-radius:8px;background:var(--ink);color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 button.sec,.btn.sec{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
-pre{background:#F3F5F7;border-radius:8px;padding:12px;font-size:12.5px;overflow:auto;white-space:pre-wrap;word-break:break-word}
-canvas.qrprev{display:block;width:180px;height:180px;image-rendering:pixelated;border:1px solid #D5DBE0;border-radius:6px}
-.code{font-size:20px;font-weight:800;letter-spacing:.04em}
-.steps{font-size:14px;color:var(--ink2);padding-left:18px}
+button.sm{font-size:13px;padding:6px 10px;min-height:36px}
+button.danger{background:#fff;color:var(--bad);border:1.5px solid var(--bad)}
+button.danger.armed{background:var(--bad);color:#fff}
+button:disabled{opacity:.5;cursor:wait}
+.msg{margin-top:12px;padding:10px 12px;border-radius:8px;font-weight:600;font-size:14px}
+.msg.ok{background:var(--okbg);color:var(--ok)}.msg.bad{background:var(--badbg);color:var(--bad)}
 .firma-box{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:6px}
 .firma-box img{height:56px;max-width:220px;object-fit:contain;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0 0/12px 12px;border-radius:6px;border:1px solid #D5DBE0}
 .file{position:relative;overflow:hidden}
 .file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.tablebox{overflow:auto;margin-top:12px;border:1px solid #DDE3E8;border-radius:8px;max-height:520px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid #E6EAEE;vertical-align:middle}
+th{position:sticky;top:0;background:#F3F5F7;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2)}
+tr.sel td{background:#EAF3FB}
+td.code{font-weight:700;white-space:nowrap}
+td.acts{white-space:nowrap}
+td.acts>div{display:flex;gap:6px}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:99px}
+.pill.vigente{background:var(--okbg);color:var(--ok)}.pill.revocado{background:var(--badbg);color:var(--bad)}
+.editing{font-size:13px;font-weight:700;color:#2E5E8A}
 #certSec{margin-top:24px}
-#certFit{width:100%;overflow:hidden;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.12)}
-
+#certFit{width:100%;max-width:1123px;overflow:hidden;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.12)}
 /* ---------- Certificado A4 horizontal (1123 × 794 px = 297 × 210 mm) ---------- */
 .cert{width:1123px;height:794px;padding:24px;background:var(--ink);font-family:"Archivo",Arial,sans-serif;color:var(--ink);transform-origin:0 0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .cert .in{position:relative;width:100%;height:100%;background:#fff;border-radius:16px;overflow:hidden;padding:44px 72px 40px;display:flex;flex-direction:column;align-items:center}
@@ -66,26 +81,41 @@ canvas.qrprev{display:block;width:180px;height:180px;image-rendering:pixelated;b
 
 @page{size:A4 landscape;margin:0}
 @media print{
-  html,body{background:#fff;margin:0}
-  .wrap>*{display:none!important}
-  .wrap{padding:0;max-width:none}
-  .wrap>#certSec{display:block!important;margin:0}
-  #certSec>*:not(#certFit){display:none!important}
-  #certFit{box-shadow:none;border-radius:0;height:auto!important;overflow:visible}
-  .cert{transform:none!important}
+  html,body{background:#fff;margin:0;height:794px;overflow:hidden}
+  body *{visibility:hidden}
+  #cert,#cert *{visibility:visible}
+  #cert{position:fixed;left:0;top:0;transform:none!important}
+  #cert [hidden]{display:none!important}
 }
+
 @media (max-width:520px){.fields{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>Generar certificado con QR</h1>
-<p class="lead">Herramienta interna. Todo se calcula en este navegador: no se envía ni se guarda nada en la web hasta que subas el archivo .json al repositorio.</p>
+<div class="top">
+<div><h1>Certificados · alta, baja y modificación</h1>
+<p class="lead">Los datos se guardan en la planilla «VMC · Certificados» de tu Google Drive. Lo que registres acá queda verificable al instante en victorparedes.ar/qr-verified.</p></div>
+<button type="button" class="sec" id="logout" hidden>Salir</button>
+</div>
+
+<form class="card" id="login" style="max-width:460px">
+<h2>Ingresar</h2>
+<label>Clave del ABM<input id="key" type="password" autocomplete="current-password" required></label>
+<div class="row"><button type="submit" id="loginBtn">Entrar</button></div>
+<div id="loginMsg"></div>
+</form>
+
+<div id="app" hidden>
 <div class="grid">
 <form class="card" id="f">
+<div class="row" style="margin:0 0 14px;justify-content:space-between">
+<h2 style="margin:0" id="formTitle">Nuevo certificado</h2>
+<span class="editing" id="editingTag" hidden></span>
+</div>
 <div class="fields">
 <label class="full">Nombre y apellido<input name="nombre" required></label>
-<label>DNI<input name="dni" inputmode="numeric" required><span class="hint">En la web solo se publican los 3 últimos dígitos</span></label>
+<label>DNI<input name="dni" inputmode="numeric" required><span class="hint">En la web pública solo se ven los 3 últimos dígitos</span></label>
 <label>Carga horaria (horas reloj)<input name="horas" type="number" min="1" required><span class="hint"></span></label>
 <label class="full">Curso<input name="curso" value="Operador de Water Transfer" required></label>
 <label>Nivel (opcional)<input name="nivel" value="Nivel 1"></label>
@@ -101,36 +131,40 @@ canvas.qrprev{display:block;width:180px;height:180px;image-rendering:pixelated;b
 <span class="btn sec file">Cargar firma<input type="file" id="firmaFile" accept="image/png,image/webp,image/jpeg" aria-label="Cargar imagen de la firma"></span>
 <button type="button" class="sec" id="firmaDel" hidden>Quitar</button>
 </div>
-<span class="hint">Queda guardada solo en este navegador. No se sube a la web.</span>
+<span class="hint">Queda guardada solo en este navegador. No se sube a la web ni a Drive.</span>
 </div>
 </div>
-<div class="row"><button type="submit">Generar código, QR y certificado</button></div>
-</form>
-<section class="card" aria-live="polite">
-<div id="empty"><p class="lead">Completá los datos y generá el certificado.</p>
-<ol class="steps">
-<li>Revisá las fechas escritas en palabras debajo de cada campo.</li>
-<li>Descargá el .json y subilo a <b>qr-verified/c/</b> del repositorio de la web: recién ahí el QR queda activo.</li>
-<li>Guardá el certificado en PDF con el botón <b>Imprimir o guardar PDF</b>.</li>
-</ol></div>
-<div id="out" hidden>
-<div class="code" id="codeTxt"></div>
-<p style="margin:4px 0 12px;font-size:13px;color:var(--ink2);word-break:break-all" id="urlTxt"></p>
-<canvas class="qrprev" id="qr" width="360" height="360" aria-label="Código QR del certificado"></canvas>
 <div class="row">
-<button type="button" id="dlJson">Descargar .json</button>
-<button type="button" class="sec" id="dlSvg">QR en SVG</button>
-<button type="button" class="sec" id="dlPng">QR en PNG</button>
+<button type="submit" id="saveBtn">Registrar certificado</button>
+<button type="button" class="sec" id="cancelEdit" hidden>Cancelar edición</button>
 </div>
-<pre id="json"></pre>
+<div id="formMsg"></div>
+</form>
+
+<section class="card">
+<div class="row" style="margin:0;justify-content:space-between">
+<h2 style="margin:0">Registrados</h2>
+<button type="button" class="sec sm" id="reload">Actualizar</button>
 </div>
+<label style="margin-top:12px">Buscar<input id="q" placeholder="Nombre, DNI, código o curso"></label>
+<div class="tablebox">
+<table>
+<thead><tr><th>Código</th><th>Participante</th><th>Emisión</th><th>Estado</th><th>Acciones</th></tr></thead>
+<tbody id="tb"><tr><td colspan="5">Cargando…</td></tr></tbody>
+</table>
+</div>
+<div id="listMsg"></div>
 </section>
 </div>
 
 <section id="certSec" hidden>
 <div class="row" style="margin:0 0 12px;justify-content:space-between">
-<h2 style="margin:0">Certificado</h2>
+<h2 style="margin:0" id="certTitle">Certificado</h2>
+<div class="row" style="margin:0">
+<button type="button" class="sec" id="dlSvg">QR en SVG</button>
+<button type="button" class="sec" id="dlPng">QR en PNG</button>
 <button type="button" id="print">Imprimir o guardar PDF</button>
+</div>
 </div>
 <div id="certFit">
 <div class="cert" id="cert">
@@ -189,96 +223,133 @@ canvas.qrprev{display:block;width:180px;height:180px;image-rendering:pixelated;b
 </div>
 </section>
 </div>
+</div>
 
+<script src="config.js"></script>
 <script src="qrcode.js"></script>
 <script>
 (function(){
-  var BASE='https://victorparedes.ar/qr-verified/?c=';
-  var ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var API=window.VMC_API, BASE='https://victorparedes.ar/qr-verified/?c=';
   var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  var FKEY='vmc_firma_v1';
-  var current=null, $=function(id){return document.getElementById(id);};
+  var FKEY='vmc_firma_v1', SKEY='vmc_abm_key';
+  var $=function(id){return document.getElementById(id);};
+  var key=null, items=[], editing=null, shown=null;
 
   function words(s){ var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||''); return m? parseInt(m[3],10)+' de '+MESES[parseInt(m[2],10)-1]+' de '+m[1] : ''; }
-  function dniFmt(d){ return d.replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
-  function randCode(year){ var a=new Uint8Array(6); crypto.getRandomValues(a); var s=''; for(var i=0;i<6;i++) s+=ALPHA[a[i]%ALPHA.length]; return 'VMC-'+year+'-'+s; }
+  function dniFmt(d){ return String(d||'').replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+  function msg(el,cls,text){ var b=$(el); b.innerHTML=''; if(!text) return; var d=document.createElement('div'); d.className='msg '+cls; d.textContent=text; b.appendChild(d); }
   function download(name,blob){ var u=URL.createObjectURL(blob), a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(u)},1000); }
   function buildQr(text){ var q=qrcode(0,'M'); q.addData(text); q.make(); return q; }
-  function drawCanvas(q,cv,margin){
-    var n=q.getModuleCount(), size=n+margin*2, scale=Math.floor(cv.width/size), ctx=cv.getContext('2d');
-    ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height);
-    var off=Math.floor((cv.width-size*scale)/2); ctx.fillStyle='#000';
-    for(var r=0;r<n;r++) for(var c=0;c<n;c++) if(q.isDark(r,c)) ctx.fillRect(off+(c+margin)*scale,off+(r+margin)*scale,scale,scale);
+  function drawCanvas(q,cv,margin){ var n=q.getModuleCount(), size=n+margin*2, scale=Math.floor(cv.width/size), ctx=cv.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height); var off=Math.floor((cv.width-size*scale)/2); ctx.fillStyle='#000'; for(var r=0;r<n;r++) for(var c=0;c<n;c++) if(q.isDark(r,c)) ctx.fillRect(off+(c+margin)*scale,off+(r+margin)*scale,scale,scale); }
+  function svgOf(q,margin){ var n=q.getModuleCount(), size=n+margin*2, d=''; for(var r=0;r<n;r++) for(var c=0;c<n;c++) if(q.isDark(r,c)) d+='M'+(c+margin)+' '+(r+margin)+'h1v1h-1z'; return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+size+' '+size+'" shape-rendering="crispEdges"><rect width="'+size+'" height="'+size+'" fill="#fff"/><path d="'+d+'" fill="#000"/></svg>'; }
+
+  function api(action,extra){
+    var body={key:key,action:action}; for(var k in (extra||{})) body[k]=extra[k];
+    return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(function(j){ if(!j.ok){ var e=new Error(j.error||'error'); e.code=j.error; throw e; } return j; });
   }
-  function svgOf(q,margin){
-    var n=q.getModuleCount(), size=n+margin*2, d='';
-    for(var r=0;r<n;r++) for(var c=0;c<n;c++) if(q.isDark(r,c)) d+='M'+(c+margin)+' '+(r+margin)+'h1v1h-1z';
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+size+' '+size+'" shape-rendering="crispEdges"><rect width="'+size+'" height="'+size+'" fill="#fff"/><path d="'+d+'" fill="#000"/></svg>';
+  function errText(e){ return e.code==='clave'?'La clave no es correcta.':e.code==='no_encontrado'?'Ese certificado ya no existe en la planilla.':'No se pudo conectar con la planilla. Probá de nuevo.'; }
+
+  /* ---- ingreso ---- */
+  function enter(){ $('login').hidden=true; $('app').hidden=false; $('logout').hidden=false; load(); }
+  if(!API){ msg('loginMsg','bad','Falta conectar la planilla: completá la URL de Apps Script en qr-verified/config.js.'); $('loginBtn').disabled=true; }
+  try{ var saved=sessionStorage.getItem(SKEY); if(saved&&API){ key=saved; enter(); } }catch(_){}
+  $('login').addEventListener('submit',function(e){
+    e.preventDefault(); key=$('key').value.trim(); $('loginBtn').disabled=true; msg('loginMsg','','');
+    api('login').then(function(){ try{sessionStorage.setItem(SKEY,key);}catch(_){} enter(); })
+      .catch(function(err){ msg('loginMsg','bad',errText(err)); })
+      .then(function(){ $('loginBtn').disabled=false; });
+  });
+  $('logout').onclick=function(){ try{sessionStorage.removeItem(SKEY);}catch(_){} location.reload(); };
+
+  /* ---- listado ---- */
+  function load(){
+    msg('listMsg','','');
+    return api('list').then(function(j){ items=j.items||[]; renderList(); })
+      .catch(function(err){ if(err.code==='clave'){ $('logout').click(); return; } $('tb').innerHTML=''; msg('listMsg','bad',errText(err)); });
+  }
+  $('reload').onclick=load;
+  $('q').addEventListener('input',renderList);
+  function btn(text,cls,fn){ var b=document.createElement('button'); b.type='button'; b.className='sm '+cls; b.textContent=text; b.onclick=fn; return b; }
+  function renderList(){
+    var q=$('q').value.trim().toLowerCase(), tb=$('tb'); tb.innerHTML='';
+    var list=items.filter(function(o){ return !q || [o.codigo,o.nombre,o.dni,o.curso].join(' ').toLowerCase().indexOf(q)>=0; });
+    if(!list.length){ var tr=document.createElement('tr'); var td=document.createElement('td'); td.colSpan=5; td.textContent=items.length?'Sin resultados.':'Todavía no hay certificados registrados.'; tr.appendChild(td); tb.appendChild(tr); return; }
+    list.forEach(function(o){
+      var tr=document.createElement('tr'); if(shown&&shown.codigo===o.codigo) tr.className='sel';
+      var c1=document.createElement('td'); c1.className='code'; c1.textContent=o.codigo;
+      var c2=document.createElement('td'); c2.textContent=o.nombre+' · '+o.curso+(o.nivel?' '+o.nivel:'');
+      var c3=document.createElement('td'); c3.textContent=o.fecha_emision||'';
+      var c4=document.createElement('td'); var p=document.createElement('span'); p.className='pill '+(o.estado||'vigente'); p.textContent=o.estado||'vigente'; c4.appendChild(p);
+      var c5=document.createElement('td'); c5.className='acts'; var box=document.createElement('div');
+      box.appendChild(btn('Ver','sec',function(){ showCert(o); }));
+      box.appendChild(btn('Editar','sec',function(){ startEdit(o); }));
+      box.appendChild(btn(o.estado==='revocado'?'Reactivar':'Revocar','sec',function(ev){ setEstado(o,o.estado==='revocado'?'vigente':'revocado',ev.target); }));
+      var del=btn('Eliminar','danger',function(){
+        if(!del.classList.contains('armed')){ del.classList.add('armed'); del.textContent='¿Confirmar?'; setTimeout(function(){ del.classList.remove('armed'); del.textContent='Eliminar'; },4000); return; }
+        del.disabled=true;
+        api('delete',{codigo:o.codigo}).then(function(){ if(shown&&shown.codigo===o.codigo){ $('certSec').hidden=true; shown=null; } if(editing===o.codigo) resetForm(); return load(); })
+          .catch(function(err){ msg('listMsg','bad',errText(err)); del.disabled=false; });
+      });
+      box.appendChild(del); c5.appendChild(box);
+      [c1,c2,c3,c4,c5].forEach(function(td){ tr.appendChild(td); }); tb.appendChild(tr);
+    });
+  }
+  function setEstado(o,estado,b){
+    b.disabled=true;
+    api('estado',{codigo:o.codigo,estado:estado}).then(load).catch(function(err){ msg('listMsg','bad',errText(err)); b.disabled=false; });
   }
 
-  /* fechas en palabras debajo de cada campo, para evitar confusiones día/mes */
+  /* ---- alta y modificación ---- */
+  var form=$('f');
+  function fill(o){ ['nombre','dni','curso','nivel','horas','modalidad','fecha_inicio','fecha_fin','fecha_emision','vencimiento'].forEach(function(k){ form.elements[k].value=o[k]||''; form.elements[k].dispatchEvent(new Event('input')); }); }
+  function startEdit(o){ editing=o.codigo; fill(o); $('formTitle').textContent='Modificar certificado'; $('editingTag').textContent=o.codigo; $('editingTag').hidden=false; $('saveBtn').textContent='Guardar cambios'; $('cancelEdit').hidden=false; msg('formMsg','',''); form.scrollIntoView({behavior:'smooth',block:'start'}); }
+  function resetForm(){ editing=null; form.reset(); form.elements.curso.value='Operador de Water Transfer'; form.elements.nivel.value='Nivel 1'; Array.prototype.forEach.call(form.elements,function(el){ el.dispatchEvent(new Event('input')); }); $('formTitle').textContent='Nuevo certificado'; $('editingTag').hidden=true; $('saveBtn').textContent='Registrar certificado'; $('cancelEdit').hidden=true; }
+  $('cancelEdit').onclick=function(){ resetForm(); msg('formMsg','',''); };
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var fd=new FormData(form), data={};
+    ['nombre','dni','curso','nivel','horas','modalidad','fecha_inicio','fecha_fin','fecha_emision','vencimiento'].forEach(function(k){ data[k]=(fd.get(k)||'').toString().trim(); });
+    data.dni=data.dni.replace(/\D/g,'');
+    $('saveBtn').disabled=true; msg('formMsg','','');
+    var p= editing? api('update',{codigo:editing,data:data}) : api('create',{data:data});
+    p.then(function(j){
+      msg('formMsg','ok',(editing?'Cambios guardados en ':'Registrado: ')+j.item.codigo+'. Ya se puede verificar en la web.');
+      resetForm(); showCert(j.item); return load();
+    }).catch(function(err){ msg('formMsg','bad',errText(err)); })
+      .then(function(){ $('saveBtn').disabled=false; });
+  });
+
   Array.prototype.forEach.call(document.querySelectorAll('.hint[data-for]'),function(h){
-    var inp=document.querySelector('[name="'+h.dataset.for+'"]');
-    var upd=function(){ h.textContent=inp.value?words(inp.value):''; };
-    inp.addEventListener('input',upd); inp.addEventListener('change',upd); upd();
+    var inp=form.elements[h.dataset.for]; var upd=function(){ h.textContent=inp.value?words(inp.value):''; };
+    inp.addEventListener('input',upd); inp.addEventListener('change',upd);
   });
 
-  /* firma: guardada solo en este navegador */
-  function setFirma(src){
-    var on=!!src;
-    $('firmaPrev').hidden=!on; $('firmaDel').hidden=!on; $('cFirma').hidden=!on; $('cFirmaPh').hidden=on;
-    if(on){ $('firmaPrev').src=src; $('cFirma').src=src; } else { $('firmaPrev').removeAttribute('src'); $('cFirma').removeAttribute('src'); }
-  }
+  /* ---- firma (solo en este navegador) ---- */
+  function setFirma(src){ var on=!!src; $('firmaPrev').hidden=!on; $('firmaDel').hidden=!on; $('cFirma').hidden=!on; $('cFirmaPh').hidden=on; if(on){ $('firmaPrev').src=src; $('cFirma').src=src; } }
   try{ setFirma(localStorage.getItem(FKEY)); }catch(_){ setFirma(null); }
-  $('firmaFile').addEventListener('change',function(e){
-    var f=e.target.files&&e.target.files[0]; if(!f) return;
-    var r=new FileReader(); r.onload=function(){ setFirma(r.result); try{ localStorage.setItem(FKEY,r.result); }catch(_){} }; r.readAsDataURL(f);
-  });
+  $('firmaFile').addEventListener('change',function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(){ setFirma(r.result); try{ localStorage.setItem(FKEY,r.result); }catch(_){} }; r.readAsDataURL(f); });
   $('firmaDel').onclick=function(){ setFirma(null); try{ localStorage.removeItem(FKEY); }catch(_){} $('firmaFile').value=''; };
 
-  /* escala de la vista previa del certificado */
+  /* ---- certificado ---- */
   function fit(){ var box=$('certFit'), s=Math.min(1,box.clientWidth/1123); $('cert').style.transform='scale('+s+')'; box.style.height=(794*s)+'px'; }
   window.addEventListener('resize',fit);
-
-  $('f').addEventListener('submit',function(e){
-    e.preventDefault();
-    var fd=new FormData(e.target), g=function(k){return (fd.get(k)||'').toString().trim();};
-    var dni=g('dni').replace(/\D/g,''), em=g('fecha_emision');
-    var rec={
-      codigo: randCode(em.slice(0,4)||new Date().getFullYear()),
-      estado:'vigente', nombre:g('nombre'), dni_parcial:dni.slice(-3),
-      curso:g('curso'), nivel:g('nivel')||undefined, horas:Number(g('horas')), modalidad:g('modalidad'),
-      fecha_inicio:g('fecha_inicio'), fecha_fin:g('fecha_fin'), fecha_emision:em,
-      vencimiento:g('vencimiento')||undefined, firma:'Lic. Víctor Javier Paredes'
-    };
-    var url=BASE+rec.codigo, q=buildQr(url);
-    current={rec:rec,q:q,url:url};
-    $('empty').hidden=true; $('out').hidden=false;
-    $('codeTxt').textContent=rec.codigo; $('urlTxt').textContent=url;
-    $('json').textContent=JSON.stringify(rec,null,2);
-    drawCanvas(q,$('qr'),4);
-
-    $('cNombre').textContent=rec.nombre;
-    $('cDni').textContent=dniFmt(dni);
-    $('cCurso').textContent=rec.curso;
-    $('cNivel').textContent=rec.nivel||''; $('cNivel').hidden=!rec.nivel;
-    $('cDetalle').innerHTML='';
-    var t=$('cDetalle'); t.appendChild(document.createTextNode('de '));
-    var b=document.createElement('strong'); b.style.fontWeight='800'; b.textContent=rec.horas; t.appendChild(b);
-    t.appendChild(document.createTextNode(' horas reloj de duración, cursado en modalidad '+rec.modalidad+' con clases teóricas y prácticas, desarrollado entre el '+words(rec.fecha_inicio)+' y el '+words(rec.fecha_fin)+'.'));
-    $('cQr').innerHTML=svgOf(q,0);
-    $('cCodigo').textContent=rec.codigo;
-    $('cEmision').textContent='Neuquén, '+words(rec.fecha_emision);
-    $('certSec').hidden=false; fit();
+  function showCert(o){
+    shown=o; var q=buildQr(BASE+o.codigo); shown.q=q;
+    $('certTitle').textContent='Certificado '+o.codigo+(o.estado==='revocado'?' (revocado)':'');
+    $('cNombre').textContent=o.nombre; $('cDni').textContent=dniFmt(o.dni);
+    $('cCurso').textContent=o.curso; $('cNivel').textContent=o.nivel||''; $('cNivel').hidden=!o.nivel;
+    var t=$('cDetalle'); t.innerHTML=''; t.appendChild(document.createTextNode('de '));
+    var b=document.createElement('strong'); b.style.fontWeight='800'; b.textContent=o.horas; t.appendChild(b);
+    t.appendChild(document.createTextNode(' horas reloj de duración, cursado en modalidad '+o.modalidad+' con clases teóricas y prácticas, desarrollado entre el '+words(o.fecha_inicio)+' y el '+words(o.fecha_fin)+'.'));
+    $('cQr').innerHTML=svgOf(q,0); $('cCodigo').textContent=o.codigo; $('cEmision').textContent='Neuquén, '+words(o.fecha_emision);
+    $('certSec').hidden=false; fit(); renderList();
     $('certSec').scrollIntoView({behavior:'smooth',block:'start'});
-  });
-  $('print').onclick=function(){
-    var prev=document.title; if(current) document.title='Certificado '+current.rec.codigo+' '+current.rec.nombre;
-    window.print(); setTimeout(function(){document.title=prev;},500);
-  };
-  $('dlJson').onclick=function(){ if(current) download(current.rec.codigo+'.json',new Blob([JSON.stringify(current.rec,null,2)+'\n'],{type:'application/json'})); };
-  $('dlSvg').onclick=function(){ if(current) download('QR-'+current.rec.codigo+'.svg',new Blob([svgOf(current.q,4)],{type:'image/svg+xml'})); };
-  $('dlPng').onclick=function(){ if(!current) return; var cv=document.createElement('canvas'); cv.width=cv.height=1200; drawCanvas(current.q,cv,4); cv.toBlob(function(b){ download('QR-'+current.rec.codigo+'.png',b); },'image/png'); };
+  }
+  $('print').onclick=function(){ var prev=document.title; if(shown) document.title='Certificado '+shown.codigo+' '+shown.nombre; window.print(); setTimeout(function(){document.title=prev;},500); };
+  $('dlSvg').onclick=function(){ if(shown) download('QR-'+shown.codigo+'.svg',new Blob([svgOf(shown.q,4)],{type:'image/svg+xml'})); };
+  $('dlPng').onclick=function(){ if(!shown) return; var cv=document.createElement('canvas'); cv.width=cv.height=1200; drawCanvas(shown.q,cv,4); cv.toBlob(function(b){ download('QR-'+shown.codigo+'.png',b); },'image/png'); };
 })();
 </script>
 </body>
