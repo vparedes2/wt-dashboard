@@ -633,7 +633,7 @@ function update3D(dt){
 
 let noPrime=0;$('prime').onclick=()=>{const s=S;if(!s.liftOk){noPrime=performance.now();return}prime={on:true,t0:performance.now(),dur:Math.max(3,Math.min(90,s.tPrime))}};
 buildScene();run();
-const has3D=init3D();
+const has3D=init3D();window.__W3=W3;
 if(has3D){W3.cut=true;document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>view(b.dataset.v));$('cut').onclick=()=>{setCut(!W3.cut);$('cut').classList.toggle('pri',W3.cut)}}
 else{$('v3d').style.display='none';$('scene').style.display='block'}
 let last=performance.now();function loop(t){const dt=Math.min(0.1,(t-last)/1000);last=t;tAnim+=dt;if(has3D)update3D(dt);else drawScene(dt);requestAnimationFrame(loop)}requestAnimationFrame(loop);
