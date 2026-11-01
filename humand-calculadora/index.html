@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de ahorro Humand · Neuquén</title>
+<meta name="description" content="Estimá cuántas horas y cuánto dinero libera Humand en una empresa de la cuenca neuquina.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0c1636; --navy2:#16265a; --blue:#496be3; --blue-l:#8aa2ff; --orange:#ff8c1a;
+  --green:#2ec484; --wa:#25d366; --ink:#18203c; --grey:#6b7392; --line:#e3e7f3; --bg:#f4f6fc; --card:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45}
+h1,h2,h3{font-family:Poppins,Inter,sans-serif;margin:0;line-height:1.15}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header.hero{background:radial-gradient(1200px 500px at 90% -20%,rgba(255,140,26,.35),transparent 60%),
+  radial-gradient(900px 500px at -10% 120%,rgba(73,107,227,.45),transparent 60%),var(--navy);color:#fff;padding:36px 0 28px}
+.brand{display:flex;align-items:center;gap:10px;font-family:Poppins;font-weight:700;font-size:20px;letter-spacing:.2px}
+.brand small{font-family:Inter;font-weight:500;font-size:13px;color:#c9d2f1;margin-left:6px}
+.hero h1{font-size:clamp(26px,4vw,40px);margin:18px 0 10px;max-width:760px}
+.hero p{color:#c9d2f1;max-width:720px;margin:0}
+.hero .company{margin-top:18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.hero input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:10px;padding:10px 12px;font:inherit;min-width:260px}
+.hero input::placeholder{color:#aeb8de}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:22px;margin:22px auto 40px}
+@media (max-width:960px){.layout{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card h2{font-size:19px;margin-bottom:4px}
+.card .sub{color:var(--grey);font-size:14px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;align-items:end}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--grey);font-weight:500}
+label.f input{font:inherit;color:var(--ink);font-weight:600;border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:#fbfcff;width:100%}
+label.f input:focus{outline:2px solid var(--blue-l);border-color:var(--blue)}
+.mods{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.mod{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.mod.off{opacity:.55}
+.mod-head{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer}
+.mod-head .tag{font-size:11px;font-weight:700;letter-spacing:.4px;padding:3px 8px;border-radius:999px;color:#fff;white-space:nowrap}
+.tag.rrhh{background:var(--blue)} .tag.hse{background:var(--orange)} .tag.com{background:#7a5af5} .tag.dir{background:var(--green)}
+.mod-head .t{flex:1;min-width:0}
+.mod-head .t b{display:block;font-size:15px}
+.mod-head .t span{display:block;font-size:13px;color:var(--grey)}
+.mod-head .v{text-align:right;white-space:nowrap}
+.mod-head .v b{display:block;font-family:Poppins;font-size:16px;color:var(--ink)}
+.mod-head .v span{font-size:12px;color:var(--grey)}
+.sw{position:relative;width:42px;height:24px;flex:none}
+.sw input{opacity:0;width:0;height:0}
+.sw i{position:absolute;inset:0;background:#cfd5e6;border-radius:999px;transition:.2s}
+.sw i:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+i{background:var(--green)}
+.sw input:checked+i:before{transform:translateX(18px)}
+.mod-body{display:none;padding:4px 14px 14px;border-top:1px dashed var(--line)}
+.mod.open .mod-body{display:block}
+.mod-body p{font-size:13px;color:var(--grey);margin:10px 0}
+.chev{color:var(--grey);font-size:12px;transition:.2s}
+.mod.open .chev{transform:rotate(180deg)}
+aside .sticky{position:sticky;top:16px;display:flex;flex-direction:column;gap:14px}
+.total{background:var(--navy);color:#fff;border:none}
+.total .big{font-family:Poppins;font-size:34px;font-weight:700;margin:4px 0 0}
+.total .usd{color:var(--blue-l);font-weight:600}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.kpi{background:rgba(255,255,255,.08);border-radius:12px;padding:10px}
+.kpi b{display:block;font-family:Poppins;font-size:20px}
+.kpi span{font-size:12px;color:#c9d2f1}
+.roles .r{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.roles .r:last-child{border:0}
+.roles .r em{font-style:normal;color:var(--grey);font-size:12px;display:block}
+.bars .b{margin:8px 0}
+.bars .b div{display:flex;justify-content:space-between;font-size:13px;gap:8px}
+.bars .b div span:last-child{color:var(--grey);white-space:nowrap}
+.bars .b i{display:block;height:8px;border-radius:6px;background:linear-gradient(90deg,var(--blue),var(--blue-l));margin-top:4px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:0;border-radius:12px;padding:11px 14px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.wa{background:var(--wa);color:#fff;flex:1;justify-content:center}
+.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.note{font-size:12px;color:var(--grey)}
+.warn{background:#fff7ec;border:1px solid #ffd9ad;border-radius:14px;padding:12px 14px;font-size:13px;color:#6b4a1c}
+footer{background:var(--navy);color:#c9d2f1;padding:26px 0;font-size:13px}
+footer b{color:#fff}
+.mbar{display:none}
+@media (max-width:960px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mod-head .tag{display:none}
+  .mod-head{gap:10px;padding:12px}
+  body{padding-bottom:72px}
+  .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--navy);color:#fff;padding:10px 16px;gap:12px;align-items:center;justify-content:space-between;box-shadow:0 -6px 20px rgba(0,0,0,.2);border:0;font:inherit;text-align:left;cursor:pointer}
+  .mbar b{font-family:Poppins;font-size:20px;display:block}
+  .mbar span{font-size:12px;color:#c9d2f1}
+  .mbar .go{background:var(--orange);color:#fff;border-radius:10px;padding:8px 12px;font-weight:600;font-size:14px;white-space:nowrap}
+}
+@media print{.mbar{display:none!important}}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;pointer-events:none}
+.toast.on{opacity:1}
+#report{display:none}
+@page{size:A4;margin:12mm}
+@media print{
+  body{background:#fff;padding:0!important}
+  body>*:not(#report){display:none!important}
+  #report{display:block;font-size:10.5pt;color:#18203c}
+  #report *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+#report .rh{display:flex;justify-content:space-between;gap:16px;background:#0c1636;color:#fff;border-radius:10px;padding:14px 16px}
+#report .rh h1{font-size:17pt;margin:2px 0 4px}
+#report .rh .who{text-align:right;font-size:9.5pt;line-height:1.5;color:#dfe5fb}
+#report .rh .who b{color:#fff;font-size:11pt}
+#report .meta{color:#c9d2f1;font-size:9.5pt}
+#report .kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+#report .kp div{border:1px solid #e3e7f3;border-radius:8px;padding:8px 10px}
+#report .kp b{display:block;font-family:Poppins,Inter,sans-serif;font-size:14pt}
+#report .kp span{font-size:8.5pt;color:#6b7392}
+#report .kp .main{background:#eef2ff;border-color:#c9d4ff}
+#report h2{font-size:11.5pt;margin:12px 0 6px}
+#report table{width:100%;border-collapse:collapse;font-size:9.5pt}
+#report th{text-align:left;background:#f4f6fc;color:#6b7392;font-weight:600;padding:5px 7px;border-bottom:1px solid #e3e7f3}
+#report td{padding:4px 7px;border-bottom:1px solid #eef0f6}
+#report td.n,#report th.n{text-align:right;white-space:nowrap}
+#report tr.tot td{font-weight:700;border-top:2px solid #18203c;border-bottom:0}
+#report .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+#report .disc{margin-top:12px;border:1px solid #ffd9ad;background:#fff7ec;border-radius:8px;padding:9px 11px;font-size:9pt;color:#6b4a1c}
+#report .rf{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:12px;border-top:1px solid #e3e7f3;padding-top:10px;font-size:9.5pt}
+#report .rf #qr img,#report .rf #qr canvas{width:84px!important;height:84px!important}
+#report .avoid{break-inside:avoid}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="brand">humand <small>· Representante en la Patagonia</small></div>
+    <h1>¿Cuánto tiempo y dinero libera Humand en tu empresa?</h1>
+    <p>Calculadora orientativa para empresas de la cuenca con personal distribuido en frentes, locaciones o turnos. Ajustá los datos y activá los módulos que te interesan.</p>
+    <div class="company">
+      <input id="empresa" placeholder="Nombre de la empresa (opcional)" aria-label="Nombre de la empresa">
+    </div>
+  </div>
+</header>
+
+<main class="wrap layout">
+  <section style="display:flex;flex-direction:column;gap:18px;min-width:0">
+    <div class="card">
+      <h2>1. Datos de la empresa</h2>
+      <p class="sub">Con estos datos se escalan todos los cálculos.</p>
+      <div class="grid" id="g-empresa"></div>
+    </div>
+    <div class="card">
+      <h2>2. Costos de referencia</h2>
+      <p class="sub">Costo hora total para la empresa (sueldo, adicionales y cargas sociales).</p>
+      <div class="grid" id="g-costos"></div>
+    </div>
+    <div class="card">
+      <h2>3. Módulos</h2>
+      <p class="sub">Tocá un módulo para ver y ajustar sus supuestos. Apagalo si no aplica.</p>
+      <div class="mods" id="mods"></div>
+    </div>
+    <div class="warn">
+      <b>Para tener en cuenta.</b> Las horas de microlearning se cuentan como tiempo pago dentro de la jornada: la capacitación obligatoria no debe hacerse en descansos ni refrigerios. Lo práctico (altura, espacios confinados, izaje, extintores) sigue siendo presencial. Parte del ahorro es tiempo que se reasigna a tareas de más valor, no necesariamente dinero en efectivo.
+    </div>
+  </section>
+
+  <aside id="res">
+    <div class="sticky">
+      <div class="card total">
+        <div style="font-size:13px;color:#c9d2f1" id="t-empresa">Ahorro anual estimado</div>
+        <div class="big" id="t-ars">$0</div>
+        <div class="usd" id="t-usd">US$ 0</div>
+        <div class="kpis">
+          <div class="kpi"><b id="t-horas">0</b><span>horas liberadas por año</span></div>
+          <div class="kpi"><b id="t-roi">0x</b><span>retorno sobre la inversión</span></div>
+          <div class="kpi"><b id="t-pay">0</b><span>meses de recupero</span></div>
+          <div class="kpi"><b id="t-costo">$0</b><span>inversión anual en Humand</span></div>
+        </div>
+      </div>
+      <div class="card roles">
+        <h2 style="font-size:16px;margin-bottom:6px">Tiempo liberado por puesto</h2>
+        <div id="roles"></div>
+      </div>
+      <div class="card bars">
+        <h2 style="font-size:16px;margin-bottom:6px">Ahorro por módulo</h2>
+        <div id="bars"></div>
+      </div>
+      <div class="btns">
+        <a class="btn wa" id="wa" target="_blank" rel="noopener">Pedir demo por WhatsApp</a>
+        <button class="btn ghost" id="copy">Copiar link con estos datos</button>
+        <button class="btn ghost" onclick="window.print()">Descargar informe PDF</button>
+        <button class="btn ghost" id="reset">Restablecer</button>
+      </div>
+      <p class="note">Estimación orientativa basada en supuestos editables. No constituye una cotización. Confirmá el precio de Humand para tu cantidad de usuarios.</p>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <div class="wrap">
+    <b>Víctor Paredes</b> · Representante Humand en la Patagonia · Lic. en Higiene y Seguridad<br>
+    WhatsApp 299 460-3071 · vparedes2@gmail.com · <a href="https://victorparedes.ar" target="_blank" rel="noopener">victorparedes.ar</a>
+  </div>
+</footer>
+<button class="mbar" id="mbar" onclick="document.getElementById('res').scrollIntoView({behavior:'smooth'})"><div><span>Ahorro anual estimado</span><b id="m-ars">$0</b><span id="m-roi"></span></div><div class="go">Ver detalle</div></button>
+<div class="toast" id="toast"></div>
+<section id="report" aria-hidden="true"></section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+// ---------- parámetros globales ----------
+const G = [
+  {g:'empresa', k:'N', l:'Personas en la plantilla', v:300},
+  {g:'empresa', k:'F', l:'Frentes o cuadrillas', v:20},
+  {g:'empresa', k:'S', l:'Supervisores y capataces', v:20},
+  {g:'empresa', k:'STAFF', l:'Personal administrativo', v:15},
+  {g:'empresa', k:'ROT', l:'Rotación anual (%)', v:40},
+  {g:'empresa', k:'D', l:'Días trabajados por mes', v:22},
+  {g:'empresa', k:'HJ', l:'Horas por jornada', v:8},
+  {g:'costos', k:'op', l:'Operario ($/hora)', v:12600},
+  {g:'costos', k:'sup', l:'Supervisor o capataz ($/hora)', v:20000},
+  {g:'costos', k:'hse', l:'Técnico HSE ($/hora)', v:28800},
+  {g:'costos', k:'rrhh', l:'RR.HH. / administración ($/hora)', v:16500},
+  {g:'costos', k:'ger', l:'Gerencia ($/hora)', v:50000},
+  {g:'costos', k:'USD', l:'Dólar ($ por US$)', v:1560},
+  {g:'costos', k:'HUM', l:'Humand (US$ por usuario por mes)', v:3.33},
+];
+const ROLES = {op:'Operarios', sup:'Supervisores y capataces', hse:'Técnico HSE', rrhh:'RR.HH. y administración', ger:'Gerencia'};
+
+// ---------- módulos ----------
+// cada módulo devuelve {L:[[puesto, horasAntes, horasDespues]], extra:$, extraH:horas pagadas evitadas}
+const M = [
+ {id:'cap', tag:'hse', name:'Capacitación con microlearning', desc:'Cápsulas desde el celular, con registro de cada participante',
+  p:[['hm','Horas de charla mensual por persona',1],['ha','Horas de cursos anuales por persona',8],
+     ['tm','Traslado y espera por charla (h)',0.5],['ta','Traslado y espera por curso anual (h)',1.5],
+     ['mig','% de contenido teórico que pasa a microlearning',70],['red','% menos de tiempo con microlearning',40],
+     ['pr','Encuentros prácticos presenciales por año',4],['gr','Personas por grupo en cursos',25]],
+  f:(g,p)=>{
+    const teo=12*p.hm+p.ha, grupos=Math.ceil(g.N/p.gr);
+    const opA=g.N*(teo+12*p.tm+2*p.ta), opD=g.N*(teo*p.mig/100*(1-p.red/100)+p.pr*2.5);
+    const hseA=g.F*12*(p.hm+1.5)+grupos*2*(p.ha/2+1.5), hseD=28+24+p.pr*grupos*3;
+    const ses=g.F*12+grupos*2, regA=ses*0.25+g.N*14/60+40, regD=10;
+    return {L:[['op',opA,opD],['hse',hseA,hseD],['rrhh',regA,regD]], extra:ses*15*200};
+  }},
+ {id:'doc', tag:'rrhh', name:'Documentos y firma electrónica', desc:'Recibos y documentos firmados desde el celular',
+  p:[['mr','Minutos por recibo (imprimir, llevar, firmar, archivar)',6],['hoja','Costo de impresión por recibo ($)',300]],
+  f:(g,p)=>({L:[['rrhh',g.N*12*p.mr/60,g.N*12*0.25/60]], extra:g.N*12*p.hoja})},
+ {id:'asi', tag:'rrhh', name:'Control de asistencia y Kiosk', desc:'Fichaje facial o con PIN, sin partes en papel',
+  p:[['mp','Minutos de carga por persona por día',1],['res','% de carga manual que queda',10]],
+  f:(g,p)=>{const a=g.N*g.D*12*p.mp/60; return {L:[['rrhh',a,a*p.res/100]]};}},
+ {id:'fic', tag:'dir', name:'Exactitud del fichaje', desc:'Horas mal liquidadas que se evitan (redondeos, partes mal cargados)',
+  p:[['err','% de horas liquidadas con error hoy',0.5],['cor','% del error que se elimina',70]],
+  f:(g,p,c)=>{const h=g.N*g.D*g.HJ*12*p.err/100*p.cor/100; return {L:[], extra:h*c.op, extraH:h};}},
+ {id:'sol', tag:'rrhh', name:'Vacaciones, permisos y Gestión de Servicios', desc:'Pedidos de EPP, certificados y licencias desde la app',
+  p:[['sm','Solicitudes por persona por mes',0.5],['ma','Minutos de gestión hoy',15],['md','Minutos de gestión con Humand',3]],
+  f:(g,p)=>({L:[['rrhh',g.N*p.sm*12*p.ma/60,g.N*p.sm*12*p.md/60]]})},
+ {id:'onb', tag:'rrhh', name:'Onboarding y Legajo digital', desc:'Preboarding, documentos e inducción teórica antes del primer día',
+  p:[['ra','Horas de RR.HH. por ingreso hoy',3],['rd','Horas de RR.HH. con Humand',1],['ha','Horas de HSE por ingreso hoy',2],['hd','Horas de HSE con Humand',1],['oa','Horas del ingresante hoy',4],['od','Horas del ingresante con Humand',1.5]],
+  f:(g,p)=>{const i=g.N*g.ROT/100; return {L:[['rrhh',i*p.ra,i*p.rd],['hse',i*p.ha,i*p.hd],['op',i*p.oa,i*p.od]]};}},
+ {id:'for', tag:'hse', name:'Formularios (checklists e inspecciones)', desc:'Sin transcribir papeles: respuestas con reportes',
+  p:[['fd','Formularios por frente por día',3],['mt','Minutos de transcripción por formulario',4]],
+  f:(g,p)=>{const a=g.F*p.fd*g.D*12*p.mt/60; return {L:[['rrhh',a,a*0.06]]};}},
+ {id:'ia', tag:'rrhh', name:'Asistente IA y Librerías de conocimiento', desc:'Responde consultas repetidas sobre vacaciones, recibos y políticas',
+  p:[['cq','Consultas por persona por mes',1],['mr','Minutos de RR.HH. por consulta',10],['mo','Minutos del operario por consulta',10],['res','% que resuelve el asistente',60]],
+  f:(g,p)=>{const n=g.N*12*p.cq, k=1-p.res/100; return {L:[['rrhh',n*p.mr/60,n*p.mr/60*k],['op',n*p.mo/60,n*p.mo/60*k]]};}},
+ {id:'rec', tag:'rrhh', name:'Reclutamiento y entrevistas con IA', desc:'Preselección de CV y primera entrevista automatizada',
+  p:[['hi','Horas de selección por ingreso hoy',3],['red','% de tiempo que se ahorra',70]],
+  f:(g,p)=>{const a=g.N*g.ROT/100*p.hi; return {L:[['rrhh',a,a*(1-p.red/100)]]};}},
+ {id:'ref', tag:'dir', name:'Programa de referidos', desc:'Ingresos recomendados por el propio personal en lugar de consultoras',
+  p:[['cons','% de ingresos que hoy pasan por consultora',25],['rep','% de esos que se cubren con referidos',40],['fee','Comisión de la consultora por ingreso ($)',1500000],['bono','Premio al empleado que refiere ($)',200000]],
+  f:(g,p)=>{const n=g.N*g.ROT/100*p.cons/100*p.rep/100; return {L:[], extra:n*(p.fee-p.bono)};}},
+ {id:'tur', tag:'rrhh', name:'Turnos laborales y Bolsa de horas', desc:'Diagramas con plantillas recurrentes, sin Excel',
+  p:[['hs','Horas semanales armando diagramas hoy',8],['red','% que se ahorra',50]],
+  f:(g,p)=>{const a=p.hs*52; return {L:[['rrhh',a,a*(1-p.red/100)]]};}},
+ {id:'int', tag:'rrhh', name:'Integraciones con el sistema de sueldos', desc:'Altas, bajas y cambios sin doble carga',
+  p:[['mm','Minutos por movimiento',15],['red','% que se ahorra',80]],
+  f:(g,p)=>{const mov=g.N*g.ROT/100*2+g.N, a=mov*p.mm/60; return {L:[['rrhh',a,a*(1-p.red/100)]]};}},
+ {id:'hab', tag:'rrhh', name:'Legajo y Archivos para habilitaciones', desc:'Documentación por persona lista para la operadora',
+  p:[['mh','Minutos por persona por habilitación o renovación',20],['red','% que se ahorra',50]],
+  f:(g,p)=>{const a=(g.N*g.ROT/100+g.N)*p.mh/60; return {L:[['rrhh',a,a*(1-p.red/100)]]};}},
+ {id:'wf', tag:'rrhh', name:'Workflows de aprobación', desc:'Horas extra, anticipos y pedidos aprobados desde la app',
+  p:[['am','Aprobaciones por persona por mes',0.5],['ma','Minutos del supervisor por aprobación',5],['red','% que se ahorra',70]],
+  f:(g,p)=>{const a=g.N*p.am*12*p.ma/60; return {L:[['sup',a,a*(1-p.red/100)]]};}},
+ {id:'com', tag:'com', name:'Noticias, Chat, Grupos y Transmisión en vivo', desc:'Menos tiempo de supervisores replicando información',
+  p:[['hs','Horas semanales por supervisor pasando información',1],['red','% que se ahorra',40]],
+  f:(g,p)=>{const a=g.S*p.hs*52; return {L:[['sup',a,a*(1-p.red/100)]]};}},
+ {id:'bus', tag:'com', name:'Archivos, Accesos rápidos y Organigrama', desc:'Encontrar procedimientos, planillas y contactos al instante',
+  p:[['ms','Minutos semanales buscando información por persona',15],['red','% que se ahorra',50]],
+  f:(g,p)=>{const a=(g.S+g.STAFF)*p.ms/60*52; return {L:[['sup',a,a*(1-p.red/100)]]};}},
+ {id:'des', tag:'rrhh', name:'Evaluación de desempeño y Objetivos', desc:'Evaluaciones digitales y consolidación automática',
+  p:[['ms','Minutos del supervisor por evaluación',20],['mr','Minutos de RR.HH. por evaluación',20]],
+  f:(g,p)=>({L:[['sup',g.N*p.ms/60,g.N*p.ms/60*0.5],['rrhh',g.N*p.mr/60,g.N*p.mr/60*0.4]]})},
+ {id:'enc', tag:'hse', name:'Encuestas y People Experience', desc:'Clima y percepción de riesgos sin tabular papeles',
+  p:[['ea','Encuestas por año',2],['mt','Minutos de tabulación por respuesta',5]],
+  f:(g,p)=>{const a=g.N*p.ea*p.mt/60; return {L:[['rrhh',a,a*0.04]]};}},
+ {id:'ins', tag:'hse', name:'Insights', desc:'Indicadores listos para gerencia',
+  p:[['hm','Horas mensuales armando indicadores hoy',8],['hd','Horas mensuales con Humand',2]],
+  f:(g,p)=>({L:[['hse',p.hm*12,p.hd*12]]})},
+ {id:'viv', tag:'com', name:'Comunicación de gerencia en vivo', desc:'Menos recorridas solo para comunicar novedades',
+  p:[['vi','Visitas por año a los frentes',6],['hv','Horas por visita',8],['red','% que se ahorra',75]],
+  f:(g,p)=>{const a=p.vi*p.hv; return {L:[['ger',a,a*(1-p.red/100)]]};}},
+ {id:'rot', tag:'dir', name:'Menor rotación (potencial)', desc:'Reconocimientos, eventos y clima ayudan a retener. Apagado por defecto',
+  off:true,
+  p:[['red','% menos de rotación',10],['hr','Horas de productividad perdidas por reemplazo',176]],
+  f:(g,p,c)=>{const n=g.N*g.ROT/100*p.red/100; return {L:[], extra:n*p.hr*c.op};}},
+];
+
+// ---------- estado ----------
+const DEF = {}; G.forEach(x=>DEF[x.k]=x.v);
+M.forEach(m=>{DEF['on_'+m.id]=m.off?0:1; m.p.forEach(([k,,v])=>DEF[m.id+'_'+k]=v);});
+let S = {...DEF};
+try{ const h=decodeURIComponent(location.hash.slice(1)); if(h){ const o=JSON.parse(decodeURIComponent(escape(atob(h)))); Object.assign(S,o.s||{}); if(o.e) document.getElementById('empresa').value=o.e; } }catch(e){}
+
+const fmt = n => n.toLocaleString('es-AR',{maximumFractionDigits:0});
+const money = n => '$' + (Math.abs(n)>=1e6 ? (n/1e6).toLocaleString('es-AR',{maximumFractionDigits:1})+' M' : fmt(n));
+
+function field(key,label,parent){
+  const l=document.createElement('label'); l.className='f';
+  l.innerHTML=`<span>${label}</span><input type="number" step="any" inputmode="decimal" data-k="${key}" value="${S[key]}">`;
+  parent.appendChild(l);
+}
+G.forEach(x=>field(x.k,x.l,document.getElementById('g-'+x.g)));
+const modsEl=document.getElementById('mods');
+M.forEach(m=>{
+  const d=document.createElement('div'); d.className='mod'; d.id='m-'+m.id;
+  const tagTxt={rrhh:'RR.HH.',hse:'HSE',com:'COMUNICACIÓN',dir:'AHORRO DIRECTO'}[m.tag];
+  d.innerHTML=`<div class="mod-head">
+     <label class="sw" onclick="event.stopPropagation()"><input type="checkbox" data-k="on_${m.id}" ${S['on_'+m.id]?'checked':''}><i></i></label>
+     <div class="t"><b>${m.name}</b><span>${m.desc}</span></div>
+     <div class="v"><b id="v-${m.id}">$0</b><span id="h-${m.id}">0 h</span></div>
+     <span class="tag ${m.tag}">${tagTxt}</span><span class="chev">▼</span></div>
+   <div class="mod-body"><p id="d-${m.id}"></p><div class="grid"></div></div>`;
+  modsEl.appendChild(d);
+  const grid=d.querySelector('.mod-body .grid');
+  m.p.forEach(([k,l])=>field(m.id+'_'+k,l,grid));
+  d.querySelector('.mod-head').addEventListener('click',()=>d.classList.toggle('open'));
+});
+
+document.addEventListener('input',e=>{
+  const k=e.target.dataset.k; if(!k) return;
+  S[k]= e.target.type==='checkbox' ? (e.target.checked?1:0) : (parseFloat(e.target.value)||0);
+  calc();
+});
+document.getElementById('empresa').addEventListener('input',calc);
+
+function calc(){
+  const g={N:S.N,F:S.F,S:S.S,STAFF:S.STAFF,ROT:S.ROT,D:S.D,HJ:S.HJ};
+  const c={op:S.op,sup:S.sup,hse:S.hse,rrhh:S.rrhh,ger:S.ger};
+  let tot=0, th=0; const roles={op:0,sup:0,hse:0,rrhh:0,ger:0}; const res=[]; const rows=[];
+  M.forEach(m=>{
+    const p={}; m.p.forEach(([k])=>p[k]=S[m.id+'_'+k]);
+    const r=m.f(g,p,c); let s=r.extra||0, h=0;
+    r.L.forEach(([role,a,d])=>{const x=Math.max(0,a-d); h+=x; s+=x*c[role];});
+    const on=!!S['on_'+m.id];
+    document.getElementById('m-'+m.id).classList.toggle('off',!on);
+    document.getElementById('v-'+m.id).textContent=money(s);
+    document.getElementById('h-'+m.id).textContent = h ? fmt(h)+' h/año' : (r.extraH? fmt(r.extraH)+' h mal pagadas evitadas':'ahorro directo');
+    document.getElementById('d-'+m.id).textContent = r.L.map(([role,a,d])=>`${ROLES[role]}: ${fmt(a)} h hoy → ${fmt(d)} h con Humand`).join(' · ') || 'Ahorro en dinero, sin horas liberadas de personal.';
+    if(on){ tot+=s; th+=h; r.L.forEach(([role,a,d])=>roles[role]+=Math.max(0,a-d)); res.push([m.name,s]); rows.push({n:m.name,h,s,x:r.extraH||0}); }
+  });
+  const costo=S.HUM*S.N*12*S.USD;
+  const emp=document.getElementById('empresa').value.trim();
+  document.getElementById('t-empresa').textContent='Ahorro anual estimado'+(emp?' · '+emp:'');
+  document.getElementById('t-ars').textContent=money(tot);
+  document.getElementById('t-usd').textContent='US$ '+fmt(tot/(S.USD||1));
+  document.getElementById('t-horas').textContent=fmt(th);
+  document.getElementById('t-roi').textContent=costo? (tot/costo).toLocaleString('es-AR',{maximumFractionDigits:1})+'x':'–';
+  document.getElementById('t-pay').textContent=tot? (12*costo/tot).toLocaleString('es-AR',{maximumFractionDigits:1}):'–';
+  document.getElementById('t-costo').textContent=money(costo);
+  document.getElementById('roles').innerHTML=Object.entries(roles).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1])
+    .map(([k,v])=>`<div class="r"><span>${ROLES[k]}<em>${v/1800<0.1?'menos de 0,1':(v/1800).toLocaleString('es-AR',{maximumFractionDigits:1})} puestos de tiempo completo</em></span><b>${fmt(v)} h</b></div>`).join('');
+  res.sort((a,b)=>b[1]-a[1]); const mx=res.length?res[0][1]:1;
+  document.getElementById('bars').innerHTML=res.slice(0,10).map(([n,s])=>`<div class="b"><div><span>${n}</span><span>${money(s)}</span></div><i style="width:${Math.max(3,s/mx*100)}%"></i></div>`).join('');
+  document.getElementById('m-ars').textContent=money(tot);
+  document.getElementById('m-roi').textContent=fmt(th)+' h/año · retorno '+(costo?(tot/costo).toLocaleString('es-AR',{maximumFractionDigits:1})+'x':'–');
+  renderReport({tot,th,costo,rows,roles,emp});
+  const msg=`Hola Víctor, usé la calculadora de ahorro de Humand${emp?' para '+emp:''} y quiero coordinar una demo.`;
+  document.getElementById('wa').href='https://wa.me/5492994603071?text='+encodeURIComponent(msg);
+}
+
+const WA_REPORT='https://wa.me/5492994603071?text='+encodeURIComponent('Hola Víctor, vi el informe de ahorro de Humand y quiero coordinar una demo.');
+function renderReport(d){
+  const hoy=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+  const usd=v=>'US$ '+fmt(v/(S.USD||1));
+  const roi=d.costo?(d.tot/d.costo).toLocaleString('es-AR',{maximumFractionDigits:1})+'x':'–';
+  const pay=d.tot?(12*d.costo/d.tot).toLocaleString('es-AR',{maximumFractionDigits:1}):'–';
+  const rows=[...d.rows].sort((a,b)=>b.s-a.s).map(r=>`<tr><td>${r.n}</td><td class="n">${r.h?fmt(r.h)+' h':(r.x?fmt(r.x)+' h mal pagadas':'—')}</td><td class="n">${money(r.s)}</td></tr>`).join('');
+  const roles=Object.entries(d.roles).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${ROLES[k]}</td><td class="n">${fmt(v)} h</td><td class="n">${v/1800<0.1?'&lt;0,1':(v/1800).toLocaleString('es-AR',{maximumFractionDigits:1})}</td></tr>`).join('');
+  const sup=[['Personas en la plantilla',fmt(S.N)],['Frentes o cuadrillas',fmt(S.F)],['Supervisores y capataces',fmt(S.S)],['Rotación anual',S.ROT+'%'],
+    ['Costo hora operario','$'+fmt(S.op)],['Costo hora supervisor','$'+fmt(S.sup)],['Costo hora técnico HSE','$'+fmt(S.hse)],['Costo hora RR.HH.','$'+fmt(S.rrhh)],
+    ['Dólar de referencia','$'+fmt(S.USD)],['Humand (referencia)','US$ '+S.HUM.toLocaleString('es-AR')+' por usuario por mes']]
+    .map(([a,b])=>`<tr><td>${a}</td><td class="n">${b}</td></tr>`).join('');
+  document.getElementById('report').innerHTML=`
+  <div class="rh">
+    <div><div class="meta">humand · Estimación de ahorro</div>
+      <h1>${d.emp?d.emp:'Estimación de ahorro con Humand'}</h1>
+      <div class="meta">${d.emp?'Estimación de ahorro con Humand · ':''}${hoy}</div></div>
+    <div class="who"><b>Víctor Paredes</b><br>Representante Humand en la Patagonia<br>Lic. en Higiene y Seguridad<br>WhatsApp 299 460-3071<br>vparedes2@gmail.com · victorparedes.ar</div>
+  </div>
+  <div class="kp">
+    <div class="main"><b>${money(d.tot)}</b><span>ahorro anual aproximado · ${usd(d.tot)}</span></div>
+    <div><b>${fmt(d.th)} h</b><span>horas liberadas por año</span></div>
+    <div><b>${roi}</b><span>retorno sobre la inversión</span></div>
+    <div><b>${pay} meses</b><span>recupero de la inversión</span></div>
+    <div><b>${money(d.costo)}</b><span>inversión anual de referencia en Humand</span></div>
+    <div><b>${(d.th/1800).toLocaleString('es-AR',{maximumFractionDigits:1})}</b><span>puestos de tiempo completo equivalentes</span></div>
+  </div>
+  <h2>Ahorro por módulo</h2>
+  <table><thead><tr><th>Módulo</th><th class="n">Tiempo liberado / año</th><th class="n">Ahorro anual</th></tr></thead>
+    <tbody>${rows}<tr class="tot"><td>Total</td><td class="n">${fmt(d.th)} h</td><td class="n">${money(d.tot)}</td></tr></tbody></table>
+  <div class="two avoid">
+    <div><h2>Tiempo liberado por puesto</h2><table><thead><tr><th>Puesto</th><th class="n">Horas / año</th><th class="n">Puestos equiv.</th></tr></thead><tbody>${roles}</tbody></table></div>
+    <div><h2>Supuestos principales</h2><table><tbody>${sup}</tbody></table></div>
+  </div>
+  <div class="disc avoid"><b>Valores aproximados de referencia.</b> Esta estimación se basa en supuestos generales y editables, no en datos auditados de la empresa, y no constituye una cotización ni una garantía de resultados. El precio de Humand debe confirmarse para la cantidad de usuarios. Las horas de capacitación con microlearning se consideran tiempo pago dentro de la jornada; la capacitación práctica sigue siendo presencial. Parte del ahorro es tiempo reasignado a tareas de mayor valor, no necesariamente dinero en efectivo.</div>
+  <div class="rf avoid">
+    <div><b>¿Querés validar estos números con los datos reales de tu empresa?</b><br>Coordinemos una demo de 20 minutos · WhatsApp 299 460-3071 · vparedes2@gmail.com<br>Calculadora: victorparedes.ar/humand-calculadora</div>
+    <div id="qr"></div>
+  </div>`;
+  try{ if(window.QRCode) new QRCode(document.getElementById('qr'),{text:WA_REPORT,width:168,height:168,correctLevel:QRCode.CorrectLevel.M}); }catch(e){}
+}
+window.addEventListener('load',()=>calc());
+
+function toast(t){const e=document.getElementById('toast'); e.textContent=t; e.classList.add('on'); setTimeout(()=>e.classList.remove('on'),2200);}
+document.getElementById('copy').addEventListener('click',()=>{
+  const diff={}; Object.keys(S).forEach(k=>{if(S[k]!==DEF[k]) diff[k]=S[k];});
+  const url=location.origin+location.pathname+'#'+encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify({s:diff,e:document.getElementById('empresa').value})))));
+  const done=()=>toast('Link copiado');
+  if(navigator.clipboard) navigator.clipboard.writeText(url).then(done,()=>prompt('Copiá el link:',url)); else prompt('Copiá el link:',url);
+});
+document.getElementById('reset').addEventListener('click',()=>{
+  S={...DEF}; document.querySelectorAll('[data-k]').forEach(i=>{const k=i.dataset.k; if(i.type==='checkbox') i.checked=!!S[k]; else i.value=S[k];});
+  document.getElementById('empresa').value=''; history.replaceState(null,'',location.pathname); calc();
+});
+calc();
+</script>
+</body>
+</html>
