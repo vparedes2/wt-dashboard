@@ -128,6 +128,12 @@ footer b{color:#fff}
 #report .rf{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:12px;border-top:1px solid #e3e7f3;padding-top:10px;font-size:9.5pt}
 #report .rf #qr img,#report .rf #qr canvas{width:84px!important;height:84px!important}
 #report .avoid{break-inside:avoid}
+
+.esc{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0 6px;background:#eef1f8;padding:4px;border-radius:12px}
+.esc button{border:0;background:transparent;padding:10px 6px;border-radius:9px;font:600 14px/1.1 inherit;color:#4a5578;cursor:pointer}
+.esc button.on{background:#fff;color:#1b2559;box-shadow:0 1px 3px rgba(20,30,70,.15)}
+.esc-note{font-size:13px;color:#5b6684;margin:0 0 12px}
+.esc-tag{display:inline-block;margin-top:6px;font-size:12px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff}
 </style>
 </head>
 <body>
@@ -163,7 +169,13 @@ footer b{color:#fff}
     </div>
     <div class="card">
       <h2>3. Módulos</h2>
-      <p class="sub">Tocá un módulo para ver y ajustar sus supuestos. Apagalo si no aplica.</p>
+      <p class="sub">Elegí qué tan prudentes son los supuestos. Tocá un módulo para ver y ajustarlos, o apagalo si no aplica.</p>
+      <div class="esc" id="esc" role="radiogroup" aria-label="Escenario">
+        <button type="button" data-e="1">Conservador</button>
+        <button type="button" data-e="2">Probable</button>
+        <button type="button" data-e="3">Optimista</button>
+      </div>
+      <p class="esc-note" id="esc-note"></p>
       <div class="mods" id="mods"></div>
     </div>
     <div class="warn">
@@ -177,6 +189,7 @@ footer b{color:#fff}
         <div style="font-size:13px;color:#c9d2f1" id="t-empresa">Ahorro anual estimado</div>
         <div class="big" id="t-ars">$0</div>
         <div class="usd" id="t-usd">US$ 0</div>
+        <div class="esc-tag" id="t-esc"></div>
         <div class="kpis">
           <div class="kpi"><b id="t-horas">0</b><span>horas liberadas por año</span></div>
           <div class="kpi"><b id="t-roi">0x</b><span>retorno sobre la inversión</span></div>
@@ -244,11 +257,12 @@ const M = [
      ['mig','% de contenido teórico que pasa a microlearning',70],['red','% menos de tiempo con microlearning',40],
      ['pr','Encuentros prácticos presenciales por año',4],['gr','Personas por grupo en cursos',25]],
   f:(g,p)=>{
-    const teo=12*p.hm+p.ha, grupos=Math.ceil(g.N/p.gr);
-    const opA=g.N*(teo+12*p.tm+2*p.ta), opD=g.N*(teo*p.mig/100*(1-p.red/100)+p.pr*2.5);
-    const hseA=g.F*12*(p.hm+1.5)+grupos*2*(p.ha/2+1.5), hseD=28+24+p.pr*grupos*3;
-    const ses=g.F*12+grupos*2, regA=ses*0.25+g.N*14/60+40, regD=10;
-    return {L:[['op',opA,opD],['hse',hseA,hseD],['rrhh',regA,regD]], extra:ses*15*200};
+    // la parte que no migra sigue siendo presencial, con su traslado; solo la parte migrada se ahorra
+    const teo=12*p.hm+p.ha, grupos=Math.ceil(g.N/p.gr), m=p.mig/100;
+    const opA=g.N*(teo+12*p.tm+2*p.ta), opD=opA*(1-m)+m*g.N*(teo*(1-p.red/100)+p.pr*2.5);
+    const hseA=g.F*12*(p.hm+1.5)+grupos*2*(p.ha/2+1.5), hseD=hseA*(1-m)+m*(28+24+p.pr*grupos*3);
+    const ses=g.F*12+grupos*2, regA=ses*0.25+g.N*14/60+40, regD=regA*(1-m)+m*10;
+    return {L:[['op',opA,opD],['hse',hseA,hseD],['rrhh',regA,regD]], extra:ses*15*200*m};
   }},
  {id:'doc', tag:'rrhh', name:'Documentos y firma electrónica', desc:'Recibos y documentos firmados desde el celular',
   p:[['mr','Minutos por recibo (imprimir, llevar, firmar, archivar)',6],['hoja','Costo de impresión por recibo ($)',300]],
@@ -321,10 +335,33 @@ const PRESETS = {
 const PRESET_KEYS = Object.keys(PRESETS[1]).filter(k=>k!=='name');
 const presetName = () => S.PRE && PRESETS[S.PRE] ? PRESETS[S.PRE].name : 'Personalizado';
 
+// ---------- escenarios de supuestos ----------
+// Optimista = valores originales de cada módulo. Conservador es el que se muestra por defecto.
+const ESC_VALS = {
+  cap_mig:[30,50,70], cap_red:[20,30,40], cap_tm:[0.25,0.5,0.5], cap_ta:[1,1.5,1.5],
+  fic_err:[0.2,0.3,0.5], fic_cor:[50,60,70],
+  ref_cons:[15,20,25], ref_rep:[25,30,40],
+  ia_cq:[0.7,1,1], ia_res:[30,45,60],
+  asi_res:[30,20,10], sol_md:[7,5,3], for_mt:[3,4,4],
+  rec_red:[30,50,70], tur_red:[25,35,50], int_red:[40,60,80], hab_red:[25,35,50],
+  wf_red:[30,50,70], com_red:[20,30,40], bus_red:[25,35,50], viv_red:[30,50,75],
+  onb_rd:[2,1.5,1], onb_hd:[1.5,1.25,1], onb_od:[3,2,1.5],
+  on_rot:[0,0,0],
+};
+const ESC = {1:'Conservador',2:'Probable',3:'Optimista'};
+const ESC_NOTE = {
+  1:'Supuestos prudentes: poco contenido migra a microlearning, error de fichaje bajo y pocos ingresos vía consultora. Recomendado para presentar.',
+  2:'Supuestos intermedios, razonables para una empresa que ya ordenó parte de sus procesos.',
+  3:'Supuestos de máximo aprovechamiento. Usalo solo como techo de referencia.',
+  0:'Supuestos editados a mano.'};
+const ESC_KEYS = Object.keys(ESC_VALS);
+const escName = () => ESC[S.ESC] || 'Personalizado';
+function applyEsc(o,e){ ESC_KEYS.forEach(k=>o[k]=ESC_VALS[k][e-1]); o.ESC=e; }
+
 // ---------- estado ----------
 const DEF = {}; G.forEach(x=>DEF[x.k]=x.v);
 M.forEach(m=>{DEF['on_'+m.id]=m.off?0:1; m.p.forEach(([k,,v])=>DEF[m.id+'_'+k]=v);});
-DEF.PRE=1;
+DEF.PRE=1; applyEsc(DEF,1);
 let S = {...DEF};
 try{ const h=decodeURIComponent(location.hash.slice(1)); if(h){ const o=JSON.parse(decodeURIComponent(escape(atob(h)))); Object.assign(S,o.s||{}); if(o.e) document.getElementById('empresa').value=o.e; } }catch(e){}
 
@@ -361,10 +398,14 @@ presetEl.addEventListener('change',()=>{
   if(PRESETS[id]) PRESET_KEYS.forEach(k=>S[k]=PRESETS[id][k]);
   syncInputs(); calc();
 });
+const escEl=document.getElementById('esc');
+function syncEsc(){ escEl.querySelectorAll('button').forEach(x=>{const on=+x.dataset.e===S.ESC; x.classList.toggle('on',on); x.setAttribute('aria-checked',on);}); document.getElementById('esc-note').textContent=ESC_NOTE[S.ESC]||ESC_NOTE[0]; }
+escEl.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; applyEsc(S,+b.dataset.e); syncInputs(); calc(); });
 document.addEventListener('input',e=>{
   const k=e.target.dataset.k; if(!k) return;
   S[k]= e.target.type==='checkbox' ? (e.target.checked?1:0) : (parseFloat(e.target.value)||0);
   if(PRESET_KEYS.includes(k) && S.PRE){ S.PRE=0; presetEl.value='0'; }
+  if(ESC_KEYS.includes(k) && S.ESC){ S.ESC=0; }
   calc();
 });
 document.getElementById('empresa').addEventListener('input',calc);
@@ -389,6 +430,7 @@ function calc(){
   const costo=S.HUM*S.N*12*S.USD;
   const emp=document.getElementById('empresa').value.trim();
   document.getElementById('t-empresa').textContent='Ahorro anual estimado'+(emp?' · '+emp:'');
+  syncEsc(); document.getElementById('t-esc').textContent='Escenario '+escName().toLowerCase();
   document.getElementById('t-ars').textContent=money(tot);
   document.getElementById('t-usd').textContent='US$ '+fmt(tot/(S.USD||1));
   document.getElementById('t-horas').textContent=fmt(th);
@@ -400,7 +442,7 @@ function calc(){
   res.sort((a,b)=>b[1]-a[1]); const mx=res.length?res[0][1]:1;
   document.getElementById('bars').innerHTML=res.slice(0,10).map(([n,s])=>`<div class="b"><div><span>${n}</span><span>${money(s)}</span></div><i style="width:${Math.max(3,s/mx*100)}%"></i></div>`).join('');
   document.getElementById('m-ars').textContent=money(tot);
-  document.getElementById('m-roi').textContent=fmt(th)+' h/año · retorno '+(costo?(tot/costo).toLocaleString('es-AR',{maximumFractionDigits:1})+'x':'–');
+  document.getElementById('m-roi').textContent=escName()+' · '+fmt(th)+' h/año · retorno '+(costo?(tot/costo).toLocaleString('es-AR',{maximumFractionDigits:1})+'x':'–');
   renderReport({tot,th,costo,rows,roles,emp,op,hm});
   const msg=`Hola Víctor, usé la calculadora de ahorro de Humand${emp?' para '+emp:''} y quiero coordinar una demo.`;
   document.getElementById('wa').href='https://wa.me/5492994603071?text='+encodeURIComponent(msg);
@@ -415,7 +457,7 @@ function renderReport(d){
   const rows=[...d.rows].sort((a,b)=>b.s-a.s).map(r=>`<tr><td>${r.n}</td><td class="n">${r.h?fmt(r.h)+' h':(r.x?fmt(r.x)+' h mal pagadas':'—')}</td><td class="n">${money(r.s)}</td></tr>`).join('');
   const roles=Object.entries(d.roles).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${ROLES[k]}</td><td class="n">${fmt(v)} h</td><td class="n">${v/1800<0.1?'&lt;0,1':(v/1800).toLocaleString('es-AR',{maximumFractionDigits:1})}</td></tr>`).join('');
   const sup=[['Personas en la plantilla',fmt(S.N)],['Frentes o cuadrillas',fmt(S.F)],['Supervisores y capataces',fmt(S.S)],['Rotación anual',S.ROT+'%'],
-    ['Convenio de referencia',presetName()],['Sueldo bruto mensual del operario','$'+fmt(S.SB)],['Cargas sociales y adicionales',S.CG+'%'],['Horas pagadas por mes',fmt(d.hm)],['Costo hora operario','$'+fmt(d.op)],['Costo hora supervisor','$'+fmt(S.sup)],['Costo hora técnico HSE','$'+fmt(S.hse)],['Costo hora RR.HH.','$'+fmt(S.rrhh)],
+    ['Escenario de supuestos',escName()],['Convenio de referencia',presetName()],['Sueldo bruto mensual del operario','$'+fmt(S.SB)],['Cargas sociales y adicionales',S.CG+'%'],['Horas pagadas por mes',fmt(d.hm)],['Costo hora operario','$'+fmt(d.op)],['Costo hora supervisor','$'+fmt(S.sup)],['Costo hora técnico HSE','$'+fmt(S.hse)],['Costo hora RR.HH.','$'+fmt(S.rrhh)],
     ['Dólar de referencia','$'+fmt(S.USD)],['Humand (referencia)','US$ '+S.HUM.toLocaleString('es-AR')+' por usuario por mes']]
     .map(([a,b])=>`<tr><td>${a}</td><td class="n">${b}</td></tr>`).join('');
   document.getElementById('report').innerHTML=`
@@ -426,7 +468,7 @@ function renderReport(d){
     <div class="who"><b>Víctor Paredes</b><br>Representante Humand en la Patagonia<br>Lic. en Higiene y Seguridad<br>WhatsApp 299 460-3071<br>vparedes2@gmail.com · victorparedes.ar</div>
   </div>
   <div class="kp">
-    <div class="main"><b>${money(d.tot)}</b><span>ahorro anual aproximado · ${usd(d.tot)}</span></div>
+    <div class="main"><b>${money(d.tot)}</b><span>ahorro anual aproximado · ${usd(d.tot)} · escenario ${escName().toLowerCase()}</span></div>
     <div><b>${fmt(d.th)} h</b><span>horas liberadas por año</span></div>
     <div><b>${roi}</b><span>retorno sobre la inversión</span></div>
     <div><b>${pay} meses</b><span>recupero de la inversión</span></div>
