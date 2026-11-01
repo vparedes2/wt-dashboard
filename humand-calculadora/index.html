@@ -134,6 +134,17 @@ footer b{color:#fff}
 .esc button.on{background:#fff;color:#1b2559;box-shadow:0 1px 3px rgba(20,30,70,.15)}
 .esc-note{font-size:13px;color:#5b6684;margin:0 0 12px}
 .esc-tag{display:inline-block;margin-top:6px;font-size:12px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff}
+
+.esc-desc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 14px}
+.esc-desc .ed{border:1px solid #e1e6f2;border-radius:12px;padding:10px 12px;cursor:pointer;opacity:.6;transition:.15s}
+.esc-desc .ed.on{opacity:1;border-color:#3d5af1;background:#f5f7ff}
+.esc-desc b{display:block;font-size:14px;color:#1b2559;margin-bottom:4px}
+.esc-desc b em{font-style:normal;font-weight:500;font-size:11px;color:#3d5af1;display:block}
+.esc-desc p{font-size:12.5px;color:#4a5578;margin:0 0 6px;line-height:1.35}
+.esc-desc ul{margin:0;padding-left:16px;font-size:12px;color:#5b6684;line-height:1.4}
+.esc-desc .esc-note{grid-column:1/-1;margin:2px 0 0}
+@media (max-width:720px){.esc-desc{grid-template-columns:1fr}.esc-desc .ed:not(.on){display:none}}
+#report .escr{font-size:12px;margin:8px 0 4px;padding:6px 10px;border-left:3px solid #3d5af1;background:#f5f7ff}
 </style>
 </head>
 <body>
@@ -175,7 +186,18 @@ footer b{color:#fff}
         <button type="button" data-e="2">Probable</button>
         <button type="button" data-e="3">Optimista</button>
       </div>
-      <p class="esc-note" id="esc-note"></p>
+      <div class="esc-desc" id="esc-desc">
+        <div class="ed" data-e="1"><b>Conservador <em>recomendado para presentar</em></b>
+          <p>Supone que la empresa aprovecha poco la herramienta al principio. Es el piso: lo que se puede defender frente a cualquier gerente.</p>
+          <ul><li>30% de la capacitación teórica pasa al celular</li><li>0,2% de horas mal liquidadas hoy</li><li>15% de ingresos vía consultora</li><li>El asistente IA resuelve 30% de las consultas</li></ul></div>
+        <div class="ed" data-e="2"><b>Probable</b>
+          <p>Uso normal después de los primeros meses, en una empresa que ya ordenó parte de sus procesos. Es el resultado más esperable.</p>
+          <ul><li>50% de la capacitación teórica pasa al celular</li><li>0,3% de horas mal liquidadas hoy</li><li>20% de ingresos vía consultora</li><li>El asistente IA resuelve 45% de las consultas</li></ul></div>
+        <div class="ed" data-e="3"><b>Optimista</b>
+          <p>Máximo aprovechamiento: todos los módulos en uso y procesos bien adoptados. Es el techo; usalo como referencia, no como promesa.</p>
+          <ul><li>70% de la capacitación teórica pasa al celular</li><li>0,5% de horas mal liquidadas hoy</li><li>25% de ingresos vía consultora</li><li>El asistente IA resuelve 60% de las consultas</li></ul></div>
+        <p class="esc-note" id="esc-note">En los tres escenarios la menor rotación queda apagada y la capacitación práctica sigue siendo presencial.</p>
+      </div>
       <div class="mods" id="mods"></div>
     </div>
     <div class="warn">
@@ -399,7 +421,8 @@ presetEl.addEventListener('change',()=>{
   syncInputs(); calc();
 });
 const escEl=document.getElementById('esc');
-function syncEsc(){ escEl.querySelectorAll('button').forEach(x=>{const on=+x.dataset.e===S.ESC; x.classList.toggle('on',on); x.setAttribute('aria-checked',on);}); document.getElementById('esc-note').textContent=ESC_NOTE[S.ESC]||ESC_NOTE[0]; }
+function syncEsc(){ escEl.querySelectorAll('button').forEach(x=>{const on=+x.dataset.e===S.ESC; x.classList.toggle('on',on); x.setAttribute('aria-checked',on);}); document.querySelectorAll('#esc-desc .ed').forEach(x=>x.classList.toggle('on',+x.dataset.e===S.ESC)); }
+document.getElementById('esc-desc').addEventListener('click',e=>{ const d=e.target.closest('.ed'); if(!d) return; applyEsc(S,+d.dataset.e); syncInputs(); calc(); });
 escEl.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; applyEsc(S,+b.dataset.e); syncInputs(); calc(); });
 document.addEventListener('input',e=>{
   const k=e.target.dataset.k; if(!k) return;
@@ -456,6 +479,7 @@ function renderReport(d){
   const pay=d.tot?(12*d.costo/d.tot).toLocaleString('es-AR',{maximumFractionDigits:1}):'–';
   const rows=[...d.rows].sort((a,b)=>b.s-a.s).map(r=>`<tr><td>${r.n}</td><td class="n">${r.h?fmt(r.h)+' h':(r.x?fmt(r.x)+' h mal pagadas':'—')}</td><td class="n">${money(r.s)}</td></tr>`).join('');
   const roles=Object.entries(d.roles).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${ROLES[k]}</td><td class="n">${fmt(v)} h</td><td class="n">${v/1800<0.1?'&lt;0,1':(v/1800).toLocaleString('es-AR',{maximumFractionDigits:1})}</td></tr>`).join('');
+  const ESC_TXT={1:'Supuestos prudentes, aprovechamiento bajo de la herramienta al inicio. Es el piso de la estimación.',2:'Uso normal después de los primeros meses. Es el resultado más esperable.',3:'Máximo aprovechamiento de todos los módulos. Es el techo de la estimación, no una promesa.',0:'Supuestos ajustados a mano para esta empresa.'};
   const sup=[['Personas en la plantilla',fmt(S.N)],['Frentes o cuadrillas',fmt(S.F)],['Supervisores y capataces',fmt(S.S)],['Rotación anual',S.ROT+'%'],
     ['Escenario de supuestos',escName()],['Convenio de referencia',presetName()],['Sueldo bruto mensual del operario','$'+fmt(S.SB)],['Cargas sociales y adicionales',S.CG+'%'],['Horas pagadas por mes',fmt(d.hm)],['Costo hora operario','$'+fmt(d.op)],['Costo hora supervisor','$'+fmt(S.sup)],['Costo hora técnico HSE','$'+fmt(S.hse)],['Costo hora RR.HH.','$'+fmt(S.rrhh)],
     ['Dólar de referencia','$'+fmt(S.USD)],['Humand (referencia)','US$ '+S.HUM.toLocaleString('es-AR')+' por usuario por mes']]
@@ -475,6 +499,7 @@ function renderReport(d){
     <div><b>${money(d.costo)}</b><span>inversión anual de referencia en Humand</span></div>
     <div><b>${(d.th/1800).toLocaleString('es-AR',{maximumFractionDigits:1})}</b><span>puestos de tiempo completo equivalentes</span></div>
   </div>
+  <p class="escr"><b>Escenario ${escName().toLowerCase()}.</b> ${ESC_TXT[S.ESC]??ESC_TXT[0]}</p>
   <h2>Ahorro por módulo</h2>
   <table><thead><tr><th>Módulo</th><th class="n">Tiempo liberado / año</th><th class="n">Ahorro anual</th></tr></thead>
     <tbody>${rows}<tr class="tot"><td>Total</td><td class="n">${fmt(d.th)} h</td><td class="n">${money(d.tot)}</td></tr></tbody></table>
