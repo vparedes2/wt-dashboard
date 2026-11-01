@@ -84,7 +84,7 @@ footer a{color:var(--acc)}
       <div class="ctl"><label>Desnivel agua → piso de la bomba <b id="v_z"></b></label><input type="range" id="z" min="-2" max="8" step="0.1" value="3"><small>Se suman 0,91 m del piso al eje de succión. Negativo = bomba ahogada.</small></div>
       <div class="ctl"><label>Largo de la manguera de succión <b id="v_L"></b></label><input type="range" id="L" min="3" max="40" step="1" value="12"></div>
       <div class="row2">
-        <div class="ctl"><label>Diámetro</label><select id="D"><option value="10">10"</option><option value="12" selected>12" (brida)</option><option value="14">14"</option></select></div>
+        <div class="ctl"><label>Diámetro</label><select id="D"><option value="10">10" (ampliación)</option><option value="12" selected>12" (brida)</option><option value="14">14" (reducción)</option><option value="16">16" (reducción)</option></select></div>
         <div class="ctl"><label>Material</label><select id="mat"><option value="0.0001">Rígida corrugada lisa</option><option value="0.0005" selected>Manguera de succión</option><option value="0.0015">Acero usado</option></select></div>
       </div>
       <div class="ctl"><label>Codos y accesorios (cantidad) <b id="v_nk"></b></label><input type="range" id="nk" min="0" max="6" step="1" value="2"><small>Codo de radio largo, K ≈ 0,3 cada uno</small></div>
@@ -102,7 +102,7 @@ footer a{color:var(--acc)}
       <div class="ctl"><label>Presión estática permanente <b id="v_hst"></b></label><input type="range" id="hst" min="0" max="10" step="0.1" value="6"><small>Presión en la impulsión con la bomba parada, sostenida por la válvula de retención (desnivel de la traza).</small></div>
       <div class="ctl"><label>Largo de la línea <b id="v_Ll"></b></label><input type="range" id="Ll" min="100" max="8000" step="100" value="2600"></div>
       <div class="row2">
-        <div class="ctl"><label>Diámetro</label><select id="Dd"><option value="10">10"</option><option value="12" selected>12" layflat</option><option value="14">14"</option></select></div>
+        <div class="ctl"><label>Diámetro</label><select id="Dd"><option value="10">10"</option><option value="12" selected>12" layflat</option><option value="14">14"</option><option value="16">16" layflat</option></select></div>
         <div class="ctl"><label>Material</label><select id="wave"><option value="300" selected>Layflat (a ≈ 300 m/s)</option><option value="450">HDPE (a ≈ 450 m/s)</option><option value="1100">Acero (a ≈ 1100 m/s)</option></select></div>
       </div>
       <div class="ctl"><label>Válvula de alivio (seteo) <b id="v_pset"></b></label><input type="range" id="pset" min="100" max="230" step="5" value="200"><small>Layflat 12": presión de trabajo 200 psi. Abre en el seteo y descarga plena con 10 % de sobrepresión.</small></div>
@@ -189,8 +189,10 @@ function model(){
  g.Kf=1/Math.pow(Math.max(0.1,1-g.clog),2);g.Kv=0.3/Math.pow(g.vo,5); // válvula mariposa: K ≈ 0,3 abierta, ≈ 10 al 50 %, ≈ 120 al 30 %
  g.A=Math.PI*g.D*g.D/4;g.Ad=Math.PI*g.Dd*g.Dd/4;g.r=g.n/N0;g.Qmax=QMAX0*g.r;g.Qbep=QBEP0*g.r;
  // succión
- g.suc=Q=>{const v=Q/3600/g.A,hv=v*v/(2*G),Re=v*g.D/nu(g.T),f=Q>0?fD(Re,g.eps/g.D):0;
-  const hfl=f*g.L/g.D*hv,hfk=(0.5+0.3*g.nk)*hv,hff=g.Kf*hv;return{v,hv,f,hfl,hfk,hff,hf:hfl+hfk+hff}};
+ g.Af=Math.PI*Math.pow(12*INCH,2)/4; // brida de succión 12"
+ g.suc=Q=>{const v=Q/3600/g.A,hv=v*v/(2*G),Re=v*g.D/nu(g.T),f=Q>0?fD(Re,g.eps/g.D):0,vf=Q/3600/g.Af,hvf=vf*vf/(2*G);
+  const red=g.D>12.5*INCH?0.1*hvf:g.D<11.5*INCH?Math.pow(1-g.A/g.Af,2)*hv:0; // reducción concéntrica a la brida / ampliación
+  const hfl=f*g.L/g.D*hv,hfk=(0.5+0.3*g.nk)*hv+red,hff=g.Kf*hv;return{v,hv,vf,hvf,f,hfl,hfk,hff,hf:hfl+hfk+hff}};
  g.npsha=Q=>g.ha-g.z-g.suc(Q).hf-g.hvap-0.08*g.air;
  g.dropF=Q=>{const nr=NRn(Q,g.n),na=g.npsha(Q);if(na>=nr*1.25)return 0;return Math.min(1,0.03*Math.exp(1.15*(nr-na)))};
  g.airDrop=Math.min(0.35,g.air*0.025);
@@ -215,7 +217,7 @@ function calc(){
  s.eta=En(Q,g.n)/100*(1-0.5*s.drop);
  // presiones manométricas en bridas
  const psStat=-RHO*G*g.z/1000;
- s.ps=RUN?Math.max(-(g.Pa-g.Pv),-(RHO*G*(g.z+su.hf+su.hv))/1000):Math.min(0,psStat);
+ s.ps=RUN?Math.max(-(g.Pa-g.Pv),-(RHO*G*(g.z+su.hf+su.hvf))/1000):Math.min(0,psStat);
  s.pdStat=RHO*G*g.Hst/1000; // bomba parada: columna retenida por la válvula de retención
  s.pd=RUN?(noFlow?Math.max(s.pdStat,s.ps+RHO*G*Hn(0,g.n)/1000):s.ps+RHO*G*s.Heff/1000):s.pdStat;
  s.pdPump=RUN?s.ps+RHO*G*s.Heff/1000:0;
